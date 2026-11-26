@@ -3,7 +3,7 @@
 一个 Hydro 站点的篡改猴（Tampermonkey / Violentmonkey / Userscripts）美化脚本。
 
 - 站点：`https://zsoj.gbfish.cn/`、内网镜像 `http://10.3.44.224/`（含带端口的写法，如 `http://10.3.44.224:8080/`），以及脚本头部 `@match` 里的其它 Hydro 站点
-- 当前版本：**v1.9.0**
+- 当前版本：**v1.11.0**
 - 脚本文件：`Hydro-UI-Beautifier.user.js`
 - 历史版本：`versions/Hydro-UI-Beautifier-<版本号>.user.js`
 
@@ -28,6 +28,23 @@ https://cdn.jsdelivr.net/gh/lscminxi/hydro-better@main/Hydro-UI-Beautifier.user.
 - 或者直接打开上面的地址，脚本管理器会自动弹出安装页。
 
 首次本地安装的话，打开 `Hydro-UI-Beautifier.user.js` 把内容复制进「新建脚本」也可以，但那样脚本管理器不认识更新源，只能依赖脚本内置的更新检测（见下）。
+
+## v1.11.0 更新内容
+
+### 移除自动打开（按 #11 / #12 的反馈）
+
+- 删掉「打开 `10.3.44.224` 就自动打开云原神」「打开云原神就自动跳回内网」的联动，以及配套的 `@match https://ys.mihoyo.com/cloud*`、`@grant GM_openInTab`。脚本不再自动打开任何标签页，只做美化。
+
+### 修复的工单
+
+| 工单 | 问题 | 处理 |
+| --- | --- | --- |
+| #5 | 进入新页面短暂闪屏 | 改为 `@run-at document-start`：样式与背景变量在首帧前写入（新增轻量 boot 样式），HTML 里也提前带上 `hb170-bg-active`，不再先渲染原生白/灰底再翻成毛玻璃；DOM 初始化等 `body` 就绪后再跑（body 被站点框架替换时会自动重挂） |
+| #6 | 学术页圆角出现得慢 | 学术卡片 `border-radius` / `background-clip` 由纯 CSS 直接命中，不再依赖 JS 扫描后才加类；列表栅格 `min-width:0` 防止撑破 |
+| #7 | 评测记录 / 作业 / 比赛顶部搜索、筛选没圆角 | `.section__tools` 及其内部 `input/select/button` 统一圆角与配色，窄屏自动换行 |
+| #8 | 文章编辑页编辑框不透明、无毛玻璃 | `textarea[data-markdown]`、`.textarea-container` 与 CodeMirror / EasyMDE / Monaco 外壳统一圆角 + 半透明底 + 毛玻璃，聚焦时强调色描边 |
+| #9 | `/home/settings/domain` 没有圆角 | 所有 `.section / .section__header / .section__body / .section__footer / .section__table-container / .data-table` 统一圆角（首尾元素继承外圆角），域名管理页的表格与表单控件一并适配 |
+| #10 | 账号 / 偏好 / 安全设置页没有圆角 | 同上；另外 `platform-list` / `sessionlist` / `autherlist` 的每一项改成独立圆角小卡片，`textbox` / 按钮统一圆角与配色 |
 
 ## v1.9.0 更新内容（修复「检查更新没效果」）
 
