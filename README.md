@@ -3,7 +3,7 @@
 一个 Hydro 站点的篡改猴（Tampermonkey / Violentmonkey / Userscripts）美化脚本。
 
 - 站点：`https://zsoj.gbfish.cn/`、内网镜像 `http://10.3.44.224/`（含带端口的写法，如 `http://10.3.44.224:8080/`），以及脚本头部 `@match` 里的其它 Hydro 站点
-- 当前版本：**v1.14.4**
+- 当前版本：**v1.14.5**
 - 脚本文件：`Hydro-UI-Beautifier.user.js`
 - 历史版本：`versions/Hydro-UI-Beautifier-<版本号>.user.js`
 
@@ -28,6 +28,14 @@ https://cdn.jsdelivr.net/gh/lscminxi/hydro-better@main/Hydro-UI-Beautifier.user.
 - 或者直接打开上面的地址，脚本管理器会自动弹出安装页。
 
 首次本地安装的话，打开 `Hydro-UI-Beautifier.user.js` 把内容复制进「新建脚本」也可以，但那样脚本管理器不认识更新源，只能依赖脚本内置的更新检测（见下）。
+
+## v1.14.5 更新内容
+
+- 修复透明 Monaco 透出遗留加载动画：只有编辑器内的代码行与输入层均已挂载时，才隐藏同一容器下的占位 loader；未加载完成时继续显示，不修改初始化流程。
+- 自测输出使用 `div.scratchpad__data-input > pre[contenteditable]`，单独补齐透明背景、可读文字、内边距、换行与盒模型，避免黑底和尺寸溢出。保留实际输出内容，不自动填入样例答案。
+- 右侧 minimap 的 canvas 使用随深浅色切换的混合模式，减轻画布底色形成的黑条，保留缩略图和交互。
+
+实际自测请求与编辑器可输入状态需在内网验证；若输出节点仍为空，需进一步检查自测请求或控制台错误，不能通过 CSS 生成真实运行结果。
 
 ## v1.14.4 更新内容
 

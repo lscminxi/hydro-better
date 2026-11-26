@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hydro UI Beautifier
 // @namespace    https://zsoj.gbfish.cn/
-// @version      1.14.4
+// @version      1.14.5
 // @description  Hydro 全站美化
 // @author       lrbkdgw
 // @match        https://zsoj.gbfish.cn/*
@@ -35,7 +35,7 @@
 
     // v1.11.0：移除「打开 10.3.44.224 自动打开云原神、打开云原神自动跳回内网」的联动逻辑。
     // 现在脚本只负责美化，不会自动打开任何标签页。
-    const VERSION = '1.14.4';
+    const VERSION = '1.14.5';
     // 自动更新：源仓库固定指向本脚本的 GitHub 仓库，raw 地址即 @downloadURL。
     const UPDATE = {
         repo: 'lscminxi/hydro-better',
@@ -776,6 +776,22 @@ body.hb170-scratchpad-active .quick-input-widget .monaco-list-row:is(:hover,.foc
 body.hb170-scratchpad-active .quick-input-widget :is(.monaco-icon-label,.monaco-highlighted-label,.label-name,.quick-input-titlebar){color:inherit!important}
 body.hb170-scratchpad-active .quick-input-widget :is(.label-description,.quick-input-description,.quick-input-list-separator){color:var(--hb-panel-muted)!important}
 body.hb170-scratchpad-active .quick-input-widget .monaco-highlighted-label .highlight{color:var(--hb-accent)!important}
+/* 透明编辑器会透出初始化时遗留的 loader。仅在可输入的 Monaco DOM 已挂载后隐藏。 */
+body.hb170-scratchpad-active .ScratchpadMonacoEditor:has(>.monaco-editor .view-lines):has(>.monaco-editor .inputarea)>.loader-container{display:none!important}
+/* 自测输出是 contenteditable pre，不是 textarea，也不是题面代码块。 */
+body.hb170-scratchpad-active .scratchpad-container .scratchpad__data-input{
+  box-sizing:border-box!important;min-height:0;min-width:0;color:var(--hb170-sp-ink)!important
+}
+body.hb170-scratchpad-active .scratchpad-container .scratchpad__data-input>pre[contenteditable]{
+  box-sizing:border-box!important;display:block!important;margin:0!important;padding:.5rem!important;
+  width:100%!important;min-height:100%;max-width:100%;height:auto!important;
+  background:transparent!important;color:var(--hb170-sp-ink)!important;caret-color:var(--hb170-sp-ink)!important;
+  border:0!important;box-shadow:none!important;border-radius:0!important;
+  white-space:pre-wrap!important;overflow-wrap:anywhere;line-height:1.5
+}
+/* minimap 是绘制了底色的 canvas，单改 CSS background 无法去除其中的黑色像素。 */
+body.hb170-scratchpad-active:not(.hb170-light) .monaco-editor .minimap>canvas{mix-blend-mode:screen}
+body.hb170-scratchpad-active.hb170-light .monaco-editor .minimap>canvas{mix-blend-mode:multiply}
 /* 将 Hydro 原有选中线和学术页面选中线统一成强调色。 */
 #menu.nav{--hn-active:var(--hb-accent)!important}
 #menu.nav .nav__item.nav--active{border-color:var(--hb-accent)!important}
