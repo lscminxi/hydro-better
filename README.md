@@ -3,7 +3,7 @@
 一个 Hydro 站点的篡改猴（Tampermonkey / Violentmonkey / Userscripts）美化脚本。
 
 - 站点：`https://zsoj.gbfish.cn/`、内网镜像 `http://10.3.44.224/`（含带端口的写法，如 `http://10.3.44.224:8080/`），以及脚本头部 `@match` 里的其它 Hydro 站点
-- 当前版本：**v1.12.0**
+- 当前版本：**v1.13.0**
 - 脚本文件：`Hydro-UI-Beautifier.user.js`
 - 历史版本：`versions/Hydro-UI-Beautifier-<版本号>.user.js`
 
@@ -28,6 +28,26 @@ https://cdn.jsdelivr.net/gh/lscminxi/hydro-better@main/Hydro-UI-Beautifier.user.
 - 或者直接打开上面的地址，脚本管理器会自动弹出安装页。
 
 首次本地安装的话，打开 `Hydro-UI-Beautifier.user.js` 把内容复制进「新建脚本」也可以，但那样脚本管理器不认识更新源，只能依赖脚本内置的更新检测（见下）。
+
+## v1.13.0 更新内容
+
+### 代码块并入「卡片」
+
+- 删掉独立的「代码块」标签页，设置合并到 **卡片** 页顶部。
+- 代码块外观改为**与卡片同源**：底色 = 卡片底色 + 卡片不透明度，毛玻璃 = 卡片毛玻璃，边框/阴影也复用卡片设置 —— 所以背景图片会像透过卡片一样透过代码块（此前代码块是实色，看不透）。
+- 保留的独立项只有：`代码块跟随卡片`（开关）、内边距、字号、边框、自动换行。
+- 语法高亮依旧不动 `span.hljs-*`，只是容器变成半透明玻璃。
+
+### 修复「乱」的筛选条（图 1 / 图 2）
+
+- 之前 `.section__tools` 被改成 `static` 后与标题抢位置；现在标题和工具栏在同一行 flex 布局里，标题过长自动换行，工具栏靠右，窄屏（≤900px）整体左对齐换行。
+- 工具栏内部统一高度（2.15rem）、圆角、内边距与间距：`input` / `select` / `button` / 「查看：<select>」这类内联控件不再是不同高度的方块堆叠。
+- 主按钮（提交/搜索）使用强调色，次要按钮中性色，hover 统一强调色描边。
+
+### 在线 IDE（程序坞 / scratchpad）
+
+- 之前脚本对 `mode--scratchpad` 直接跳过，IDE 里还是 Hydro 原生白底。现在 IDE 也有完整主题：容器、面板标题、工具栏、Tab 列表、数据输入区、评测记录表格、Monaco/CodeMirror 编辑器底色全部跟随脚本的深色/浅色主题与圆角。
+- 兼容两种进入方式：`body.mode--scratchpad` 或页面里直接出现 `#scratchpad` / `.scratchpad-container`（后者会自动补上标记）。
 
 ## v1.12.0 更新内容
 
