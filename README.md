@@ -3,7 +3,7 @@
 一个 Hydro 站点的篡改猴（Tampermonkey / Violentmonkey / Userscripts）美化脚本。
 
 - 站点：`https://zsoj.gbfish.cn/`、内网镜像 `http://10.3.44.224/`（含带端口的写法，如 `http://10.3.44.224:8080/`），以及脚本头部 `@match` 里的其它 Hydro 站点
-- 当前版本：**v1.11.0**
+- 当前版本：**v1.12.0**
 - 脚本文件：`Hydro-UI-Beautifier.user.js`
 - 历史版本：`versions/Hydro-UI-Beautifier-<版本号>.user.js`
 
@@ -28,6 +28,34 @@ https://cdn.jsdelivr.net/gh/lscminxi/hydro-better@main/Hydro-UI-Beautifier.user.
 - 或者直接打开上面的地址，脚本管理器会自动弹出安装页。
 
 首次本地安装的话，打开 `Hydro-UI-Beautifier.user.js` 把内容复制进「新建脚本」也可以，但那样脚本管理器不认识更新源，只能依赖脚本内置的更新检测（见下）。
+
+## v1.12.0 更新内容
+
+### 代码块可配置（新增「代码块」标签页）
+
+代码块现在和卡片一样有一整套独立参数，**站点原本的语法高亮配色完整保留**（脚本只改底色、圆角、留白、字号，不碰 `span.hljs-*` 的颜色）：
+
+| 参数 | 说明 |
+| --- | --- |
+| 启用代码块卡片化 | 总开关，关掉即恢复站点原始样式 |
+| 代码块底色 | 任意颜色，默认深色 `#1b2030` |
+| 底色不透明度 | 0–100%，可做出半透明玻璃底 |
+| 圆角 / 内边距 | 0–24px / 0–40px |
+| 毛玻璃 | 0–24px（配合半透明底使用） |
+| 代码字号 | 70–160%，只缩放代码块内部 |
+| 显示边框 / 阴影 | 复用全局边框与阴影强度 |
+| 自动换行 | 开启后长行折行，手机上不用横向滚动 |
+
+另带三个快捷预设：**深色代码底 / 浅色代码底 / 跟随强调色**，以及「恢复默认」。
+
+### 修复
+
+| 问题 | 处理 |
+| --- | --- |
+| 评测记录页筛选区没有圆角（图 1） | `.section__body > .row` 不再溢出卡片；`label > input.textbox / select` 与 `.filter-form` 统一圆角、间距；表格容器 `overflow:hidden` 让圆角真正裁切 |
+| 文章编辑页编辑区、分屏、预览区没有圆角（图 2） | 按 md-editor-rt 的实际结构给 `.md-editor / .md-editor-content / .md-editor-input-wrapper / .md-editor-preview-wrapper / .md-editor-preview / toolbar / footer` 全部补圆角 + 半透明 + 毛玻璃，`.cm-editor` 底角跟随外壳 |
+| 编辑器与右侧「发布设置」区块不统一 | 同上，并保证窄屏下 `.md-editor-wrapper` 不被挤压 |
+| 比赛列表筛选栏与标题没对齐（图 3 圈内） | `.section__tools` 之前被改成 `static` 导致错位，现在恢复 Hydro 原生的 `position:absolute` 靠右对齐，只统一内部控件圆角；≤820px 时才回到文档流并左对齐 |
 
 ## v1.11.0 更新内容
 

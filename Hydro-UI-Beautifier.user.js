@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hydro UI Beautifier
 // @namespace    https://zsoj.gbfish.cn/
-// @version      1.11.0
+// @version      1.12.0
 // @description  Hydro 全站美化
 // @author       lrbkdgw
 // @match        https://zsoj.gbfish.cn/*
@@ -35,7 +35,7 @@
 
     // v1.11.0：移除「打开 10.3.44.224 自动打开云原神、打开云原神自动跳回内网」的联动逻辑。
     // 现在脚本只负责美化，不会自动打开任何标签页。
-    const VERSION = '1.11.0';
+    const VERSION = '1.12.0';
     // 自动更新：源仓库固定指向本脚本的 GitHub 仓库，raw 地址即 @downloadURL。
     const UPDATE = {
         repo: 'lscminxi/hydro-better',
@@ -72,7 +72,9 @@
         sideFollowGlobal: true, sideOpacity: 86, sideBlur: 12, sideRadius: 16,
         academicFollowGlobal: true, academicOpacity: 86, academicBlur: 12, academicRadius: 16,
         layoutEnabled: true, width: 1440, gap: 18, sideWidth: 27, layoutMode: 'auto', compact: false,
-        striped: true, fontScale: 100, preset: 'midnight'
+        striped: true, fontScale: 100, preset: 'midnight',
+        codeStyle: true, codeBg: '#1b2030', codeOpacity: 96, codeRadius: 10, codePadding: 14,
+        codeBlur: 0, codeBorder: true, codeShadow: false, codeWrap: false, codeFontScale: 100
     };
     const THEMES = {
         midnight: { accent: '#7186f5', background: '#171923', dark: true, cardOpacity: 86, blur: 12, overlay: 18 },
@@ -93,9 +95,14 @@
         }
         for (const key of ['cardOpacity', ...GROUPS.map(g => g + 'Opacity')]) s[key] = Math.min(100, Math.max(MIN_CARD_OPACITY, s[key]));
         s.cardPadding = Math.min(36, Math.max(0, s.cardPadding));
-        for (const key of ['accent', 'background', 'gradientA', 'gradientB', 'overlayColor']) {
+        for (const key of ['accent', 'background', 'gradientA', 'gradientB', 'overlayColor', 'codeBg']) {
             if (!/^#[\da-f]{6}$/i.test(s[key])) s[key] = DEFAULTS[key];
         }
+        s.codeOpacity = Math.min(100, Math.max(0, s.codeOpacity));
+        s.codeRadius = Math.min(24, Math.max(0, s.codeRadius));
+        s.codePadding = Math.min(40, Math.max(0, s.codePadding));
+        s.codeBlur = Math.min(24, Math.max(0, s.codeBlur));
+        s.codeFontScale = Math.min(160, Math.max(70, s.codeFontScale));
         return s;
     }
     function loadSettings() {
@@ -274,12 +281,23 @@ body:not(.mode--scratchpad) .main :is(button.button,.button,input[type=submit],i
 }
 body.hb170-light:not(.mode--scratchpad) .main :is(input.textbox,textarea.textbox,select.textbox){color:var(--hb-text,#303444)!important}
 /* 5) 顶部搜索 / 筛选栏（评测记录、作业、比赛、讨论列表）统一成和题库一致的圆角容器。 */
+/* Hydro 的 .section__tools 默认 position:absolute;right/top 靠右悬浮。保留绝对定位，
+   只给内部控件加圆角，避免把标题压到下面（工单：#4 圈内没对齐）。 */
+body:not(.mode--scratchpad) .main .section__header:has(>.section__tools){padding-block-end:.6rem}
 body:not(.mode--scratchpad) .main .section__tools{
-  display:flex!important;flex-wrap:wrap;align-items:center;gap:.4rem;
-  min-width:0;max-width:100%;padding:.35rem!important;border-radius:clamp(0px,var(--hb170-radius,var(--hb-global-radius)),16px)!important;
-  background:var(--hb-panel-fill,#ffffff12)!important;border:1px solid var(--hb-panel-line,#ffffff24)!important;background-clip:padding-box!important
+  display:flex!important;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:.4rem;
+  position:absolute!important;inset-inline-end:var(--hb-global-padding)!important;top:var(--hb-global-padding)!important;
+  max-width:calc(100% - 2 * var(--hb-global-padding));min-width:0;
+  padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important
 }
 body:not(.mode--scratchpad) .main .section__tools>*{margin:0!important;min-width:0;flex:0 1 auto}
+/* 标题比较长、或者屏幕较窄时，让工具栏回到正常文档流，避免和标题叠在一起。 */
+@media(max-width:820px){
+  body:not(.mode--scratchpad) .main .section__header:has(>.section__tools){padding-block-end:.6rem}
+  body:not(.mode--scratchpad) .main .section__tools{
+    position:static!important;inset:auto!important;justify-content:flex-start;width:100%;margin-top:.5rem
+  }
+}
 body:not(.mode--scratchpad) .main .section__tools>form,
 body:not(.mode--scratchpad) .main .section__tools :is(.filter-form,.search){
   display:flex!important;flex-wrap:wrap;align-items:center;gap:.35rem;min-width:0;flex:1 1 16rem
@@ -287,7 +305,8 @@ body:not(.mode--scratchpad) .main .section__tools :is(.filter-form,.search){
 body:not(.mode--scratchpad) .main .section__tools :is(input,select,button,.button){
   min-height:2.1rem;padding:.3rem .55rem!important;
   border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 10px),9px)!important;
-  border:1px solid var(--hb-panel-line,#ffffff24)!important;background:var(--hb-panel-bg,#1e2130)!important;color:var(--hb-text,#f0f0f5)!important
+  border:1px solid var(--hb-panel-line,#ffffff24)!important;background:var(--hb-panel-bg,#1e2130)!important;color:var(--hb-text,#f0f0f5)!important;
+  box-sizing:border-box;line-height:1.35;vertical-align:middle
 }
 body:not(.mode--scratchpad) .main .section__tools :is(input,select){min-width:0;max-width:100%;flex:1 1 8rem}
 body:not(.mode--scratchpad) .main .section__tools :is(select) option{background:var(--hb-panel-bg,#252938);color:var(--hb-text,#f0f0f5)}
@@ -298,9 +317,64 @@ body:not(.mode--scratchpad) .main .section__tools :is(input,select,button):focus
   body:not(.mode--scratchpad) .main .section__tools{align-items:stretch}
   body:not(.mode--scratchpad) .main .section__tools>*{flex:1 1 100%}
 }
-/* 6) 编辑器（文章编辑 / 讨论编辑 / 设置里的 markdown 框）：透明 + 毛玻璃。 */
+/* 5b) 评测记录 / 搜索页的筛选表单：.section__body .row > .columns > label > input.textbox 需要圆角与内边距，
+   同时 section__body 内的 .row 不能冲破卡片圆角（工单 #1）。 */
+body:not(.mode--scratchpad) .main .section__body>.row,
+body:not(.mode--scratchpad) .main .section__body .row:not(.collapse){
+  margin-inline:0!important;max-width:100%
+}
+body:not(.mode--scratchpad) .main .section__body :is(.filter-form,form.filter-form){display:flex;flex-wrap:wrap;align-items:flex-end;gap:.5rem;min-width:0}
+body:not(.mode--scratchpad) .main .section__body label:has(> :is(input.textbox,select,textarea)){
+  display:block;min-width:0;max-width:100%;font-size:.875em;color:var(--hb-panel-muted,#b5bacb)
+}
+body:not(.mode--scratchpad) .main .section__body label> :is(input.textbox,select,textarea){margin-top:.25rem;margin-bottom:0!important}
+body:not(.mode--scratchpad) .main .section__body :is(input.textbox,select.textbox,select.compact,select.select,textarea.textbox){
+  border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 8px),10px)!important
+}
+/* 表格自己的圆角由外层容器负责，避免单元格被切一半。 */
+body:not(.mode--scratchpad) .main :is(.section__table-container,.record-scroll)>table.data-table{
+  border-radius:0!important
+}
+body:not(.mode--scratchpad) .main :is(.section__table-container,.record-scroll){
+  overflow:hidden!important
+}
+/* 6) 编辑器（文章编辑 / 讨论编辑 / 问题编辑）：md-editor 的编辑区、分屏区、预览区统一圆角 + 半透明 + 毛玻璃。 */
+body:not(.mode--scratchpad) .main :is(.md-editor,.md-editor-wrapper,.md-editor-content,.md-editor-inner,.md-editor-preview-wrapper){
+  border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 4px),14px)!important;
+  background:var(--hb-panel-fill,#ffffff12)!important;background-clip:padding-box!important;overflow:hidden;min-width:0
+}
+body:not(.mode--scratchpad) .main .md-editor{
+  border:1px solid var(--hb-panel-line,#ffffff24)!important;
+  backdrop-filter:blur(calc(var(--hb-global-blur) * .5));-webkit-backdrop-filter:blur(calc(var(--hb-global-blur) * .5))
+}
+body:not(.mode--scratchpad) .main .md-editor :is(.md-editor-toolbar-wrapper,.md-editor-toolbar){
+  border:0!important;border-block-end:1px solid var(--hb-panel-line,#ffffff24)!important;
+  background:transparent!important;border-radius:0!important
+}
+body:not(.mode--scratchpad) .main .md-editor :is(.md-editor-input-wrapper,.cm-editor,.cm-scroller,.cm-gutters){
+  background:transparent!important
+}
+body:not(.mode--scratchpad) .main .md-editor :is(.cm-editor,.md-editor-input-wrapper){
+  border-radius:0 0 clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 6px),12px) clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 6px),12px)!important;
+  min-width:0
+}
+body:not(.mode--scratchpad) .main :is(.md-editor-preview,.md-editor-preview-wrapper,.md-editor-resize-operate){
+  border-radius:0!important
+}
+body:not(.mode--scratchpad) .main .md-editor-preview{
+  padding:var(--hb-global-padding)!important;background:var(--hb-panel-fill,#ffffff12)!important;
+  color:var(--hb-text,#f0f0f5)!important;overflow:auto
+}
+body:not(.mode--scratchpad) .main .md-editor-preview-wrapper{
+  border-inline-start:1px solid var(--hb-panel-line,#ffffff24)!important
+}
+body:not(.mode--scratchpad) .main .md-editor :is(.md-editor-footer,.md-editor-footer-navigation){
+  border:0!important;border-block-start:1px solid var(--hb-panel-line,#ffffff24)!important;background:transparent!important
+}
+body:not(.mode--scratchpad) .main .md-editor :is(.md-editor-toolbar-item,.md-editor-footer-item){border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 12px),8px)!important}
+/* 兼容讨论/设置页的原生 textarea（markdown:true 会渲染成 md-editor，其余仍是 textarea）。 */
 body:not(.mode--scratchpad) .main :is(.textarea-container,.textbox-container):has(>textarea[data-markdown]),
-body:not(.mode--scratchpad) .main :is(textarea[data-markdown]){
+body:not(.mode--scratchpad) .main textarea[data-markdown]{
   border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 4px),14px)!important;
   background:var(--hb-panel-fill,#ffffff12)!important;border:1px solid var(--hb-panel-line,#ffffff24)!important;
   backdrop-filter:blur(calc(var(--hb-global-blur) * .5));-webkit-backdrop-filter:blur(calc(var(--hb-global-blur) * .5));
@@ -311,40 +385,72 @@ body:not(.mode--scratchpad) .main textarea[data-markdown]{
   color:var(--hb-text,#f0f0f5)!important;line-height:1.65;resize:vertical
 }
 body:not(.mode--scratchpad) .main :is(.textarea-container,.textbox-container):has(>textarea[data-markdown]):focus-within{outline:2px solid var(--hb-accent)!important;outline-offset:1px!important}
-/* CodeMirror / EasyMDE / Monaco 编辑器外壳跟随卡片圆角与背景。 */
-body:not(.mode--scratchpad) .main :is(.CodeMirror,.CodeMirror-wrap,.cm-editor,.monaco-editor,.EasyMDEContainer){
+/* CodeMirror / Monaco 外壳跟随卡片圆角与背景。 */
+body:not(.mode--scratchpad) .main :is(.CodeMirror,.CodeMirror-wrap,.cm-editor,.monaco-editor){
   border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 4px),14px)!important;
   background:var(--hb-panel-fill,#ffffff12)!important;background-clip:padding-box!important;overflow:hidden
 }
-body:not(.mode--scratchpad) .main :is(.CodeMirror,.cm-editor,.EasyMDEContainer .CodeMirror){border:1px solid var(--hb-panel-line,#ffffff24)!important}
-body:not(.mode--scratchpad) .main :is(.editor-toolbar,.EasyMDEContainer .editor-toolbar){
+body:not(.mode--scratchpad) .main :is(.CodeMirror,.cm-editor){border:1px solid var(--hb-panel-line,#ffffff24)!important}
+body:not(.mode--scratchpad) .main :is(.editor-toolbar){
   border:0!important;border-block-end:1px solid var(--hb-panel-line,#ffffff24)!important;
   border-start-start-radius:inherit!important;border-start-end-radius:inherit!important;background:transparent!important
 }
+/* 文章编写页的三段（meta / 编辑器 / 右侧发布设置）在窄屏也不互相挤压。 */
+body:not(.mode--scratchpad) .main :is(.article-editor,.blog-editor,.md-editor-wrapper){min-width:0;max-width:100%}
 /* 7) 学术页：卡片圆角与不透明底在首帧就生效，避免"等脚本扫描时才变圆角"的观感（工单 #6）。 */
 :is(#academic-root,.academic-root):not(:where(.hb170-ac,.hb170-academic)) .ac-card{
   border-radius:var(--hb-global-radius)!important;background-clip:padding-box!important
 }
 #academic-root .ac-list-layout>*,.academic-root .ac-list-layout>*{min-width:0}
-/* 代码块实色化：背景图/半透明卡片不会再透过 pre，保证代码始终清晰可读。 */
-body:not(.mode--scratchpad){--hb170-code-bg:#1b2030;--hb170-code-line:rgba(255,255,255,.14);--hb170-code-ink:#e7ebf5;--hb170-code-muted:#a7b0c6}
-body:not(.mode--scratchpad).hb170-light{--hb170-code-bg:#f6f8fc;--hb170-code-line:rgba(41,53,79,.18);--hb170-code-ink:#252b3a;--hb170-code-muted:#5b6376}
-body:not(.mode--scratchpad) pre:not(:where(.monaco-editor *,.cm-editor *,.CodeMirror *,#hb170-panel *)){
-  box-sizing:border-box!important;max-width:100%!important;overflow-x:auto!important;
+/* ---------------- 代码块：可配置的"卡片化"样式（保留站点原有的语法高亮配色） ---------------- */
+body:not(.mode--scratchpad){
+  --hb170-code-bg:#1b2030;--hb170-code-alpha:1;--hb170-code-line:rgba(255,255,255,.14);--hb170-code-ink:#e7ebf5;
+  --hb170-code-muted:#a7b0c6;--hb170-code-padding:14px;--hb170-code-radius:calc(var(--hb170-radius,var(--hb-global-radius)) - 4px);
+  --hb170-code-blur:0px;--hb170-code-shadow:none
+}
+body:not(.mode--scratchpad).hb170-light{
+  --hb170-code-bg:#f6f8fc;--hb170-code-line:rgba(41,53,79,.18);--hb170-code-ink:#252b3a;--hb170-code-muted:#5b6376
+}
+/* 所有正文代码块共用同一套外观；语法高亮只改底色/圆角/留白，不动 span 的颜色。 */
+.hb170-code{
+  box-sizing:border-box!important;max-width:100%!important;overflow:auto!important;
   background-color:var(--hb170-code-bg)!important;background-image:none!important;
   border:var(--hb170-border-width,1px) solid var(--hb170-code-line)!important;
-  border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 4px),12px)!important;
+  border-radius:clamp(0px,var(--hb170-code-radius),24px)!important;
   color:var(--hb170-code-ink)!important;
-  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
-  box-shadow:none!important;background-clip:border-box!important;
+  padding:var(--hb170-code-padding)!important;
+  box-shadow:var(--hb170-code-shadow)!important;
+  background-clip:padding-box!important;
+  -webkit-backdrop-filter:blur(var(--hb170-code-blur));backdrop-filter:blur(var(--hb170-code-blur))
 }
-body:not(.mode--scratchpad) pre:not(:where(.monaco-editor *,.cm-editor *,.CodeMirror *,#hb170-panel *)):focus-visible{outline:2px solid var(--hb-accent)!important;outline-offset:2px!important}
-body:not(.mode--scratchpad) pre:not(:where(.monaco-editor *,.cm-editor *,.CodeMirror *,#hb170-panel *))>code{
-  display:block;background:transparent!important;background-image:none!important;border:0!important;
-  padding:0!important;color:inherit!important;font:inherit;line-height:inherit
+.hb170-code:focus-visible{outline:2px solid var(--hb-accent)!important;outline-offset:2px!important}
+.hb170-code>code{
+  display:block;padding:0!important;margin:0!important;background:transparent!important;background-image:none!important;
+  border:0!important;color:inherit!important;font:inherit;line-height:inherit;white-space:pre;overflow-wrap:normal
 }
-/* 脚本自带浅色卡片但站点仍是深色语法配色时，避免亮色高亮在浅底上不可读。 */
-body.hb170-light:not(.mode--scratchpad) pre:not(:where(.monaco-editor *,.cm-editor *,.CodeMirror *,#hb170-panel *)) :is(.hljs-string,.hljs-comment,.hljs-meta,.hljs-attr){color:var(--hb170-code-muted)!important}
+/* 站点自带的 pre 底色/阴影在脚本接管后一律清掉，避免叠出两套框。 */
+body:not(.mode--scratchpad) pre.hb170-code{
+  box-shadow:var(--hb170-code-shadow)!important;
+  -webkit-backdrop-filter:blur(var(--hb170-code-blur))!important;backdrop-filter:blur(var(--hb170-code-blur))!important
+}
+/* 代码字号：只缩放代码块内部，不影响页面其它文字。 */
+body.hb170-code-style .hb170-code{
+  font-size:calc(1em * var(--hb170-code-font-scale,1))!important;
+}
+body.hb170-code-wrap .hb170-code,
+body.hb170-code-wrap .hb170-code>code{white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:break-word!important}
+/* 代码块被脚本接管后，清理站点自带的内外阴影与半透明背景叠加。 */
+/* 行内代码跟随同一套配色，避免浅底上出现深色药丸。 */
+body:not(.mode--scratchpad) .typo :is(p,li,td,blockquote) code:not(:where(pre code)){
+  padding:.1em .35em;border-radius:clamp(0px,calc(var(--hb170-code-radius) * .45),8px);
+  background-color:color-mix(in srgb,var(--hb170-code-bg) 78%,transparent);color:var(--hb170-code-ink)
+}
+/* 浅色卡片 + 深色语法配色时，把最刺眼的几种 token 拉回可读范围。 */
+body.hb170-light:not(.mode--scratchpad) .hb170-code :is(.hljs-string,.hljs-comment,.hljs-meta,.hljs-attr,.hljs-number,.hljs-literal){color:var(--hb170-code-muted)!important}
+/* 编辑器的 markdown 预览区里面的代码块同样是代码块。 */
+body:not(.mode--scratchpad) :is(.md-editor-preview,.md-editor-preview-wrapper,.typo) pre:not(:where(.monaco-editor *,.cm-editor *,.CodeMirror *,#hb170-panel *)){
+  box-sizing:border-box;max-width:100%;overflow:auto
+}
 .hb170-card>:is(.section__header,.section__body){background:transparent!important;border-radius:inherit}
 /* Keep native labels readable when the site's theme and the script's card theme differ. */
 html:is(.theme--dark,:not(.theme--light)[data-mantine-color-scheme="dark"]) body.hb170-light{--hb-card-foreground:#303444;--hb-card-link:#284b8d}
@@ -602,7 +708,7 @@ body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__body>.probl
     const color = (key, label) => `<div class="item"><div class="label">${label}</div><input data-color="${key}" type="color"></div>`;
     panel.innerHTML = `
 <header id="hb170-head"><strong>Hydro UI Beautifier</strong><small id="hb170-head-meta">v${VERSION} · Glass Design System</small></header>
-<nav id="hb170-tabs"><button class="active" data-tab="global">全局</button><button data-tab="cards">卡片</button><button data-tab="layout">布局</button><button data-tab="background">背景</button><button data-tab="themes">主题</button><button data-tab="tools">诊断/配置</button></nav>
+<nav id="hb170-tabs"><button class="active" data-tab="global">全局</button><button data-tab="cards">卡片</button><button data-tab="code">代码块</button><button data-tab="layout">布局</button><button data-tab="background">背景</button><button data-tab="themes">主题</button><button data-tab="tools">诊断/配置</button></nav>
 <main id="hb170-content">
 <section data-page="global"><h3>全局卡片样式</h3>
 ${range('cardOpacity','全局不透明度',MIN_CARD_OPACITY,100)}${range('blur','全局毛玻璃',0,30)}${range('radius','全局圆角',0,32)}${range('cardPadding','卡片内部间距',0,36)}
@@ -611,6 +717,7 @@ ${check('border','显示卡片边框')}${range('borderOpacity','边框不透明�
 <section data-page="cards" hidden><h3>板块继承关系</h3><p class="hint">默认所有板块继承全局设置。关闭某个板块的跟随开关后，才启用该板块的独立参数。</p><h3>图片与嵌入内容</h3>${check('mediaFrames','为正文图片、贴图和嵌入内容添加圆角外框')}${range('mediaFramePadding','媒体外框内边距',0,16)}<p class="hint">自动排除导航 Logo、头像和图标；带背景图的作业/比赛侧栏封面也会裁切到卡片圆角内。</p>
 ${['native:普通卡片','table:题目表格','side:右侧栏','academic:学术板块'].map(x => { const [g,label] = x.split(':'); return `<h3>${label}</h3>${check(g+'FollowGlobal','跟随全局卡片设置')}${range(g+'Opacity','不透明度',MIN_CARD_OPACITY,100)}${range(g+'Blur','毛玻璃',0,30)}${range(g+'Radius','圆角',0,32)}`; }).join('')}
 <div class="grid"><button class="action secondary" id="hb-follow-all">全部跟随全局</button><button class="action secondary" id="hb-reset-groups">重置独立参数</button></div></section>
+<section data-page="code" hidden><h3>代码块外观</h3><p class="hint">只调整代码块的底色、圆角、留白与字体大小，站点原本的语法高亮配色完全保留。</p>${check('codeStyle','启用代码块卡片化')}${color('codeBg','代码块底色')}${range('codeOpacity','底色不透明度',0,100)}${range('codeRadius','圆角',0,24)}${range('codePadding','内边距',0,40)}${range('codeBlur','毛玻璃',0,24)}${range('codeFontScale','代码字号',70,160)}${check('codeBorder','显示边框')}${check('codeShadow','显示阴影')}${check('codeWrap','自动换行（长行不再横向滚动）')}<div class="grid" style="margin-top:8px"><button class="action secondary" id="hb-code-theme-dark">深色代码底</button><button class="action secondary" id="hb-code-theme-soft">跟随强调色</button></div><div class="grid" style="margin-top:8px"><button class="action secondary" id="hb-code-theme-light">浅色代码底</button><button class="action secondary" id="hb-code-reset">恢复默认</button></div><p class="hint">换行关闭时代码块横向滚动；开启后长行折行显示，便于手机阅读。</p></section>
 <section data-page="layout" hidden><h3>页面布局</h3>${check('layoutEnabled','启用布局控制')}${range('width','内容最大宽度',900,2200,20)}${range('gap','栏间距',0,48)}${range('sideWidth','侧栏宽度比例',15,45)}<div class="item"><div class="label">布局模式</div><select data-select="layoutMode"><option value="auto">自动（保持 Hydro 原布局）</option><option value="wide">宽屏双栏</option><option value="single">单栏</option></select></div>${check('compact','紧凑模式')}<div class="hint">栏间距作用于 Hydro 的标准列布局；宽屏双栏和单栏只对检测到的主内容布局容器生效。</div><h3>字体</h3>${range('fontScale','全局字号比例',85,115)}<div class="hint">缩放以 rem 和继承字号为主；网页中固定像素字号或编辑器字号可能不受影响。</div></section>
 <section data-page="background" hidden><h3>背景模式</h3><div class="item"><select data-select="backgroundMode"><option value="image">图片/纯色</option><option value="gradient">渐变</option></select></div><div class="item"><label class="label">图片 URL</label><input id="hb-image-url" type="text" placeholder="https://..."></div><div class="grid"><button class="action" id="hb-image-apply">应用图片</button><button class="action secondary" id="hb-image-clear">清除图片</button></div><div class="status" id="hb-image-status">背景尚未加载</div>
 ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${color('gradientB','渐变颜色 B')}${range('gradientAngle','渐变角度',0,360)}<h3>背景效果</h3>${range('opacity','图片透明度',0,100)}${range('bgBlur','背景模糊',0,20)}${range('overlay','遮罩强度',0,90)}${color('overlayColor','遮罩颜色')}${range('saturation','饱和度',0,200)}${range('brightness','亮度',20,180)}${range('contrast','对比度',20,180)}${check('noise','细微噪点纹理')}${check('enabled','启用背景层')}<div class="item"><div class="label">背景尺寸</div><select data-select="bgSize"><option>cover</option><option>contain</option><option>100% 100%</option></select></div><div class="item"><div class="label">背景位置</div><select data-select="bgPosition"><option>center</option><option>top</option><option>bottom</option><option>left</option><option>right</option></select></div></section>
@@ -736,6 +843,20 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         }
         $$('.contest-sidebar__bg').forEach(el => el.classList.add('hb170-media-surface'));
     }
+    // 给正文代码块打标记；只加 class，不碰内部 span，因此站点自带的语法高亮会完整保留。
+    const CODE_EXCLUDED = '.monaco-editor,.cm-editor,.CodeMirror,.scratchpad-container,#hb170-panel,[contenteditable="true"]';
+    function markCodeBlocks() {
+        for (const pre of $$('pre')) {
+            if (pre.classList.contains('hb170-code')) continue;
+            if (pre.closest(CODE_EXCLUDED)) continue;
+            if (!pre.querySelector('code') && !pre.textContent.trim()) continue;
+            pre.classList.add('hb170-code');
+        }
+        document.documentElement.style.setProperty('--hb170-code-font-scale', settings.codeFontScale/100);
+    }
+    function unmarkCodeBlocks() {
+        for (const pre of $$('pre.hb170-code')) pre.classList.remove('hb170-code');
+    }
     function highlightCards() {
         const els = [...recognized.keys()]; els.forEach(el => el.classList.add('hb170-inspector-highlight'));
         setTimeout(() => els.forEach(el => el.classList.remove('hb170-inspector-highlight')), 1800);
@@ -794,20 +915,31 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
             '--hb-panel-muted':settings.dark?'#b5bacb':'#595f6e', '--hb-panel-line':settings.dark?'#ffffff2b':'#29354f33',
             '--hb-panel-fill':settings.dark?'#ffffff12':'#29354f0d', '--hb-panel-control-text':accentInk(settings.accent),
             '--hb-trigger-bg':rgba(settings.accent,settings.cardOpacity/100), '--hb-trigger-ink':accentInk(settings.accent,settings.cardOpacity/100),
-            '--hb-font-scale':settings.fontScale/100
+            '--hb-font-scale':settings.fontScale/100,
+            // 代码块：颜色 + 不透明度合成 rgba，保留站点原有语法高亮（只改底色/圆角/留白）。
+            '--hb170-code-bg':rgba(settings.codeBg, settings.codeOpacity/100),
+            '--hb170-code-line':settings.codeBorder ? rgba(settings.dark?'#ffffff':'#465069', Math.max(.08, settings.borderOpacity/100)) : 'transparent',
+            '--hb170-code-radius':settings.codeRadius+'px',
+            '--hb170-code-padding':settings.codePadding+'px',
+            '--hb170-code-blur':settings.codeBlur+'px',
+            '--hb170-code-shadow':settings.codeShadow ? `0 10px 30px rgba(0,0,0,${Math.min(.5,settings.shadowStrength/100)})` : 'none',
+            '--hb170-code-ink':settings.dark?'#e7ebf5':'#252b3a',
+            '--hb170-code-muted':settings.dark?'#a7b0c6':'#5b6376',
+            '--hb170-code-font-scale':settings.codeFontScale/100
         };
         for (const g of GROUPS) { const v = groupValues(g); vars[`--hb-${g}-bg`] = `rgba(${darkRGB},${v.opacity/100})`; vars[`--hb-${g}-blur`] = v.blur+'px'; vars[`--hb-${g}-radius`] = v.radius+'px'; }
         Object.entries(vars).forEach(([k,v]) => root.style.setProperty(k,v));
         root.classList.toggle('hb170-bg-active', settings.enabled && settings.transparent);
-        for (const [cls,val] of Object.entries({'bg-active':settings.enabled && settings.transparent,'transparent':settings.enabled && settings.transparent,'layout':settings.layoutEnabled,'compact':settings.compact,'striped':settings.striped,'shadow':settings.shadow,'border-off':!settings.border,'media-frames':settings.mediaFrames,'light':!settings.dark})) body.classList.toggle('hb170-'+cls,!!val);
+        for (const [cls,val] of Object.entries({'bg-active':settings.enabled && settings.transparent,'transparent':settings.enabled && settings.transparent,'layout':settings.layoutEnabled,'compact':settings.compact,'striped':settings.striped,'shadow':settings.shadow,'border-off':!settings.border,'media-frames':settings.mediaFrames,'light':!settings.dark,'code-style':settings.codeStyle,'code-wrap':settings.codeStyle && settings.codeWrap})) body.classList.toggle('hb170-'+cls,!!val);
         root.classList.toggle('hb170-font-scale', Number(settings.fontScale)!==100);
         applyBackground();
         // 更新跟随状态，不必每次滑动都重新搜索 DOM。
         if (rescan) scanCards(); else for (const [el,g] of recognized) if (el.isConnected) setCardStyle(el,g);
         if (rescan && settings.mediaFrames) scanMediaFrames();
+        if (settings.codeStyle) markCodeBlocks(); else unmarkCodeBlocks();
         applyLayoutMode(); if (persist) save();
     }
-    const units = {cardOpacity:'%',blur:'px',radius:'px',cardPadding:'px',borderOpacity:'%',borderWidth:'px',shadowStrength:'%',width:'px',gap:'px',sideWidth:'%',fontScale:'%',opacity:'%',bgBlur:'px',overlay:'%',saturation:'%',brightness:'%',contrast:'%',gradientAngle:'°',mediaFramePadding:'px'};
+    const units = {cardOpacity:'%',blur:'px',radius:'px',cardPadding:'px',borderOpacity:'%',borderWidth:'px',shadowStrength:'%',width:'px',gap:'px',sideWidth:'%',fontScale:'%',opacity:'%',bgBlur:'px',overlay:'%',saturation:'%',brightness:'%',contrast:'%',gradientAngle:'°',mediaFramePadding:'px',codeOpacity:'%',codeRadius:'px',codePadding:'px',codeBlur:'px',codeFontScale:'%'};
     function updateLabels() {
         for (const input of $$('[data-range]', panel)) {
             const k = input.dataset.range, label = settings[k]+(units[k] || (k.endsWith('Opacity') ? '%' : 'px'));
@@ -1104,6 +1236,19 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
     });
     $('#hb-redo',panel).addEventListener('click',()=>restoreHistory(historyIndex+1));
     $('#hb-scan',panel).addEventListener('click',()=>{scanCards();if(settings.mediaFrames)scanMediaFrames();toast('页面卡片扫描完成');});
+    // 代码块快捷配色
+    const codePresets = {
+        dark: { codeBg:'#1b2030', codeOpacity:96, codeBorder:true, codeShadow:false },
+        light: { codeBg:'#f6f8fc', codeOpacity:100, codeBorder:true, codeShadow:false },
+        soft: { codeBg:'#7186f5', codeOpacity:18, codeBorder:false, codeShadow:false, codeBlur:8 }
+    };
+    $('#hb-code-theme-dark',panel).addEventListener('click',()=>{Object.assign(settings,codePresets.dark);syncUI();changed();toast('代码块：深色底');});
+    $('#hb-code-theme-light',panel).addEventListener('click',()=>{Object.assign(settings,codePresets.light);syncUI();changed();toast('代码块：浅色底');});
+    $('#hb-code-theme-soft',panel).addEventListener('click',()=>{Object.assign(settings,codePresets.soft,{codeBg:settings.accent});syncUI();changed();toast('代码块：跟随强调色');});
+    $('#hb-code-reset',panel).addEventListener('click',()=>{
+        for (const k of ['codeStyle','codeBg','codeOpacity','codeRadius','codePadding','codeBlur','codeBorder','codeShadow','codeWrap','codeFontScale']) settings[k]=DEFAULTS[k];
+        syncUI(); changed(); toast('代码块设置已恢复默认');
+    });
     $('#hb-highlight',panel).addEventListener('click',highlightCards);
     function setPanelOpen(open) {
         panel.hidden = !open;
@@ -1209,7 +1354,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
     window.addEventListener('resize',()=>{refreshBaseFontSize();applyStickyFooter();refreshProblemNavigation();});
     // 合并相关变动，避免每次文本、编辑器或消息更新都触发全页扫描。
     const ownUI = '#hb170-panel,#hb170-trigger,#hb170-background,#hb170-toast,.hb170-media-frame';
-    const scanSelector = '.main,#panel,.section,.card,.ui.segment,.panel,.ac-card,#academic-root,.academic-root,.section__table-container,.section__table,table.data-table,.record-scroll,.row,.footer,footer,#footer,.page-footer,.footer-container,.nav__item,.ac-board-link,.contest-problems,img,picture,video,iframe,object,embed';
+    const scanSelector = '.main,#panel,.section,.card,.ui.segment,.panel,.ac-card,#academic-root,.academic-root,.section__table-container,.section__table,table.data-table,.record-scroll,.row,.footer,footer,#footer,.page-footer,.footer-container,.nav__item,.ac-board-link,.contest-problems,pre,img,picture,video,iframe,object,embed,.md-editor,.md-editor-preview';
     let queuedScan = 0;
     function relevantNode(node) {
         if (node.nodeType !== 1 || node.matches(ownUI) || node.closest(ownUI)) return false;
@@ -1228,6 +1373,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
             queuedScan = 0;
             mount(); scanCards();
             if (settings.mediaFrames) scanMediaFrames();
+            if (settings.codeStyle) markCodeBlocks();
             applyLayoutMode(); applyStickyFooter();
         }, 350);
     });
