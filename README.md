@@ -3,7 +3,7 @@
 一个 Hydro 站点的篡改猴（Tampermonkey / Violentmonkey / Userscripts）美化脚本。
 
 - 站点：`https://zsoj.gbfish.cn/`、内网镜像 `http://10.3.44.224/`（含带端口的写法，如 `http://10.3.44.224:8080/`），以及脚本头部 `@match` 里的其它 Hydro 站点
-- 当前版本：**v1.13.0**
+- 当前版本：**v1.14.0**
 - 脚本文件：`Hydro-UI-Beautifier.user.js`
 - 历史版本：`versions/Hydro-UI-Beautifier-<版本号>.user.js`
 
@@ -28,6 +28,14 @@ https://cdn.jsdelivr.net/gh/lscminxi/hydro-better@main/Hydro-UI-Beautifier.user.
 - 或者直接打开上面的地址，脚本管理器会自动弹出安装页。
 
 首次本地安装的话，打开 `Hydro-UI-Beautifier.user.js` 把内容复制进「新建脚本」也可以，但那样脚本管理器不认识更新源，只能依赖脚本内置的更新检测（见下）。
+
+## v1.14.0 更新内容
+
+- 评测记录题目自动补全：抬高所在卡片的层级，避免候选列表被后面的表格盖住，并统一深浅色。
+- IDE：补齐 Monaco 根节点、右侧 minimap、输入框、光标及默认文本颜色，不覆盖语法高亮色。
+- 局部跳转：重新应用配置；body 被替换时恢复美化状态，避免重复初始化事件和观察器。
+- 题面 blockquote（含数学输入格式）跟随卡片透明度、圆角和毛玻璃。
+- 比赛 / 作业筛选栏保持单行，窄屏横向滚动，搜索按钮不再折行。
 
 ## v1.13.0 更新内容
 
