@@ -3,7 +3,7 @@
 一个 Hydro 站点的篡改猴（Tampermonkey / Violentmonkey / Userscripts）美化脚本。
 
 - 站点：`https://zsoj.gbfish.cn/`、内网镜像 `http://10.3.44.224/`（含带端口的写法，如 `http://10.3.44.224:8080/`），以及脚本头部 `@match` 里的其它 Hydro 站点
-- 当前版本：**v1.14.0**
+- 当前版本：**v1.14.1**
 - 脚本文件：`Hydro-UI-Beautifier.user.js`
 - 历史版本：`versions/Hydro-UI-Beautifier-<版本号>.user.js`
 
@@ -28,6 +28,21 @@ https://cdn.jsdelivr.net/gh/lscminxi/hydro-better@main/Hydro-UI-Beautifier.user.
 - 或者直接打开上面的地址，脚本管理器会自动弹出安装页。
 
 首次本地安装的话，打开 `Hydro-UI-Beautifier.user.js` 把内容复制进「新建脚本」也可以，但那样脚本管理器不认识更新源，只能依赖脚本内置的更新检测（见下）。
+
+## v1.14.1 更新内容
+
+- 继续修复局部跳转后配置失效：除 body 外，也监测并恢复 html 上被清空/覆盖的美化 CSS 变量、卡片识别 class 和被移除的样式表；只恢复脚本自己的状态，不改站点其它属性、不重置保存的配置。
+- 增加 PJAX 完成、浏览器返回页面时的补充恢复，保留原有 body 替换处理。
+- 作业 / 比赛题号按钮禁止压缩成细线，数量过多时在题号区域自动换行；取消容器固定高度和溢出裁剪，卡片随换行高度预留空间。
+
+回归测试（需要 Node.js）：
+
+```sh
+npm install --prefix /tmp/hb-tests jsdom
+NODE_PATH=/tmp/hb-tests/node_modules node tests/navigation.cjs
+```
+
+测试覆盖根变量被清空/覆盖、body/卡片 class 丢失、样式表删除、body 替换、PJAX 事件，以及配置不被重置、恢复流程不无限循环。题号换行的实际视觉效果需在浏览器中验证。
 
 ## v1.14.0 更新内容
 
