@@ -38,6 +38,15 @@ const fixture = '<div class="main"><div class="section"><div class="section__bod
         dock.style.display = 'block'; await wait();
         assert(doc.body.classList.contains('mode--scratchpad'));
         check();
+        // Quick Input 可以 portal 到 body；不能依赖它是编辑器的子节点。
+        const picker = doc.createElement('div'); picker.className = 'quick-input-widget';
+        picker.innerHTML = '<div class="monaco-inputbox"><input placeholder="Theme"></div><div class="quick-input-list"><div class="monaco-list-row selected"><span class="label-name">Active4D</span></div></div>';
+        doc.body.append(picker);
+        assert.equal(w.getComputedStyle(picker).backgroundColor, 'rgba(30, 33, 46, 0.97)');
+        assert.equal(w.getComputedStyle(picker).color, 'rgb(240, 240, 245)');
+        assert.equal(w.getComputedStyle(picker.querySelector('input')).color, 'rgb(240, 240, 245)');
+        assert.notEqual(w.getComputedStyle(picker.querySelector('.selected')).backgroundColor, 'rgba(0, 0, 0, 0)');
+        picker.remove();
         dock.style.display = 'none'; await wait();
         assert(!doc.body.classList.contains('mode--scratchpad'));
         check();

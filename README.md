@@ -3,7 +3,7 @@
 一个 Hydro 站点的篡改猴（Tampermonkey / Violentmonkey / Userscripts）美化脚本。
 
 - 站点：`https://zsoj.gbfish.cn/`、内网镜像 `http://10.3.44.224/`（含带端口的写法，如 `http://10.3.44.224:8080/`），以及脚本头部 `@match` 里的其它 Hydro 站点
-- 当前版本：**v1.14.2**
+- 当前版本：**v1.14.3**
 - 脚本文件：`Hydro-UI-Beautifier.user.js`
 - 历史版本：`versions/Hydro-UI-Beautifier-<版本号>.user.js`
 
@@ -28,6 +28,11 @@ https://cdn.jsdelivr.net/gh/lscminxi/hydro-better@main/Hydro-UI-Beautifier.user.
 - 或者直接打开上面的地址，脚本管理器会自动弹出安装页。
 
 首次本地安装的话，打开 `Hydro-UI-Beautifier.user.js` 把内容复制进「新建脚本」也可以，但那样脚本管理器不认识更新源，只能依赖脚本内置的更新检测（见下）。
+
+## v1.14.3 更新内容
+
+- 适配 IDE 的 Monaco 主题选择弹窗（Quick Input）：底色、文字、搜索框、占位文字、焦点/选中/悬停行与搜索匹配高亮跟随美化主题，修复白底白字。
+- 弹窗使用近乎不透明的面板底色，避免壁纸影响阅读；兼容弹窗挂载在 body 下的情况，同时支持深浅色卡片，不修改代码区语法高亮。
 
 ## v1.14.2 更新内容
 
