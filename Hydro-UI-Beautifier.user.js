@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hydro UI Beautifier
 // @namespace    https://zsoj.gbfish.cn/
-// @version      1.13.0
+// @version      1.14.0
 // @description  Hydro 全站美化
 // @author       lrbkdgw
 // @match        https://zsoj.gbfish.cn/*
@@ -35,7 +35,7 @@
 
     // v1.11.0：移除「打开 10.3.44.224 自动打开云原神、打开云原神自动跳回内网」的联动逻辑。
     // 现在脚本只负责美化，不会自动打开任何标签页。
-    const VERSION = '1.13.0';
+    const VERSION = '1.14.0';
     // 自动更新：源仓库固定指向本脚本的 GitHub 仓库，raw 地址即 @downloadURL。
     const UPDATE = {
         repo: 'lscminxi/hydro-better',
@@ -277,9 +277,7 @@ body:not(.mode--scratchpad) .main :is(button.button,.button,input[type=submit],i
 }
 body.hb170-light:not(.mode--scratchpad) .main :is(input.textbox,textarea.textbox,select.textbox){color:var(--hb-text,#303444)!important}
 /* 5) 顶部搜索 / 筛选栏（评测记录、作业、比赛、讨论列表）统一成和题库一致的圆角容器。 */
-/* Hydro 的 .section__tools 默认 position:absolute;right/top 靠右悬浮。保留绝对定位，但：
-   1) 标题过长或工具栏过宽时不再和标题叠在一起；
-   2) 内部的 input/select/button 用同一套高度、圆角、间距，像一整个筛选条（图 1 / 图 2 的“乱”）。 */
+/* Hydro 的工具栏改为静态 flex 排列，统一控件高度与间距，避免与标题重叠。 */
 body:not(.mode--scratchpad) .main .section__header:has(>.section__tools){
   display:flex!important;flex-wrap:wrap;align-items:flex-start;gap:.4rem .8rem;padding-block-end:.6rem
 }
@@ -702,6 +700,32 @@ body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__body>.probl
   body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__body:has(>.problem__tags){width:100%!important}
   body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__body>.problem__tags)>.section__header>.contest-problems{position:absolute!important;inset:auto var(--hb-global-padding) var(--hb-global-padding) var(--hb-global-padding)!important;width:auto!important;max-width:none!important;justify-content:flex-start;margin:0!important}
 }
+/* v1.14：下拉菜单须抬高整个玻璃卡片的 stacking context，而不仅是列表自身。 */
+.main .section:has(.autocomplete-list):focus-within{position:relative;z-index:30!important;overflow:visible!important}
+.main .section:has(.autocomplete-list) :is(.section__body,.row,.columns){overflow:visible!important}
+.autocomplete-list{z-index:1000!important;background:var(--hb-panel-bg)!important;color:var(--hb-text)!important;border:1px solid var(--hb-panel-line);border-radius:10px!important}
+.autocomplete-list li:is([aria-selected=true],[data-focus=true]){background:color-mix(in srgb,var(--hb-accent) 24%,var(--hb-panel-bg))!important}
+/* 引用块不是 pre：单独处理，不改 KaTeX 或关键字的内部颜色。 */
+.main .typo blockquote{
+  background:var(--hb170-bg,var(--hb-global-bg))!important;color:inherit!important;
+  border:var(--hb170-border-width,1px) solid var(--hb-global-border)!important;
+  border-inline-start:3px solid var(--hb-accent)!important;border-radius:var(--hb170-radius,var(--hb-global-radius))!important;
+  backdrop-filter:blur(var(--hb-global-blur));-webkit-backdrop-filter:blur(var(--hb-global-blur))
+}
+/* 工具栏保持一行；空间不足时横向滚动，而不是压缩按钮或竖排文字。 */
+body:not(.mode--scratchpad) .main .section__tools{flex-wrap:nowrap!important;overflow-x:auto;justify-content:flex-start}
+body:not(.mode--scratchpad) .main .section__tools>form,
+body:not(.mode--scratchpad) .main .section__tools .filter-form{flex-wrap:nowrap!important;flex:0 0 auto}
+body:not(.mode--scratchpad) .main .section__tools>span:has(>select){flex:0 0 auto;white-space:nowrap}
+body:not(.mode--scratchpad) .main .section__tools :is(input.textbox,select,.select){flex:0 0 auto!important;width:auto;min-width:5rem}
+body:not(.mode--scratchpad) .main .section__tools input[name=q]{width:11rem}
+body:not(.mode--scratchpad) .main :is(.section__tools button,form[name="filter-form"] button){white-space:nowrap!important;overflow-wrap:normal!important;word-break:keep-all}
+/* Monaco 的根节点、minimap 与输入控件也必须着色，不能只涂 margin。 */
+body.mode--scratchpad :is(.ScratchpadMonacoEditor,.monaco-editor,.monaco-editor .overflow-guard,.monaco-editor .minimap,.monaco-editor .minimap-decorations-layer,.CodeMirror-scroll){background-color:var(--hb170-sp-bg)!important;color:var(--hb170-sp-ink)!important}
+body.mode--scratchpad :is(input,textarea,.inputarea){background-color:var(--hb170-sp-bg)!important;color:var(--hb170-sp-ink)!important;caret-color:var(--hb170-sp-ink)!important;border-color:var(--hb170-sp-line)!important;color-scheme:dark}
+body.mode--scratchpad.hb170-light :is(input,textarea){color-scheme:light}
+body.mode--scratchpad:not(.hb170-light) .monaco-editor .mtk1{color:var(--hb170-sp-ink)!important}
+body.mode--scratchpad .monaco-editor .cursor{color:var(--hb170-sp-ink)!important;border-color:var(--hb170-sp-ink)!important}
 /* 将 Hydro 原有选中线和学术页面选中线统一成强调色。 */
 #menu.nav{--hn-active:var(--hb-accent)!important}
 #menu.nav .nav__item.nav--active{border-color:var(--hb-accent)!important}
@@ -1301,6 +1325,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
     }
     function mount() {
         if(!document.body)return;
+        if (!style.isConnected) (document.head || document.documentElement).append(style);
         if(bg.parentNode!==document.body)document.body.prepend(bg);
         if(trigger.parentNode!==document.body)document.body.append(trigger);
         if(panel.parentNode!==document.body)document.body.append(panel);
@@ -1345,7 +1370,6 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
 
     // document-start 阶段 body 可能还没解析出来：先注入样式，等 body 就绪再做 DOM 相关初始化。
     function startWhenBodyReady(run) {
-        if (document.body) return run();
         let started = false, boundBody = null;
         const launch = () => {
             if (!document.body) return;
@@ -1353,7 +1377,9 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
             started = true;
             // 站点框架重建 body 时（Hydro 的 slideout 会替换节点）需要重新挂载并重扫。
             if (boundBody && boundBody !== document.body) {
-                mount(); applyStickyFooter(); scanCards(); applyLayoutMode();
+                mount(); applyStickyFooter(); applyAll();
+                boundBody = document.body;
+                return;
             }
             boundBody = document.body;
             if (boundBody.dataset.hbBooted === '1') return;
@@ -1363,6 +1389,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         new MutationObserver(launch).observe(document.documentElement, { childList: true, subtree: true });
         document.addEventListener('DOMContentLoaded', launch, { once: true });
         setTimeout(launch, 3000);
+        launch();
     }
     startWhenBodyReady(() => {
     mount(); applyStickyFooter(); syncUI(); refreshBaseFontSize(); applyAll();
@@ -1390,20 +1417,25 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         if (!needed) return;
         queuedScan = setTimeout(() => {
             queuedScan = 0;
-            mount(); scanCards();
+            mount(); applyAll(true, false);
             if (settings.mediaFrames) scanMediaFrames();
             if (settings.codeStyle) markCodeBlocks();
             applyLayoutMode(); applyStickyFooter();
         }, 350);
     });
-    observer.observe(document.body,{childList:true,subtree:true});
+    observer.observe(document.documentElement,{childList:true,subtree:true});
     // 程序坞在部分版本里直接渲染 #scratchpad，这里补齐 mode--scratchpad，保证 IDE 样式生效。
     if (document.querySelector('#scratchpad,.scratchpad-container')) document.body.classList.add('mode--scratchpad');
     let inScratchpad = document.body.classList.contains('mode--scratchpad');
-    new MutationObserver(()=>{
+    new MutationObserver(records=>{
+        if (!records.some(r => r.target === document.body)) return;
         const next = document.body.classList.contains('mode--scratchpad');
         if (next !== inScratchpad) { inScratchpad = next; applyLayoutMode(); }
-    }).observe(document.body,{attributes:true,attributeFilter:['class']});
+        const expected = settings.enabled && settings.transparent;
+        if (document.body.classList.contains('hb170-transparent') !== !!expected ||
+            document.body.classList.contains('hb170-light') !== !settings.dark ||
+            document.body.classList.contains('hb170-code-style') !== !!settings.codeStyle) applyAll(true, false);
+    }).observe(document.documentElement,{attributes:true,subtree:true,attributeFilter:['class']});
     console.info(`[Hydro UI Beautifier] v${VERSION} loaded`);
     });
 })();
