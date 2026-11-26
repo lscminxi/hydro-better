@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hydro UI Beautifier
 // @namespace    https://zsoj.gbfish.cn/
-// @version      1.9.0
+// @version      1.10.0
 // @description  Hydro 全站美化
 // @author       lrbkdgw
 // @match        https://zsoj.gbfish.cn/*
@@ -12,6 +12,7 @@
 // @match        https://10.3.44.224:*
 // @match        https://hydro.ac/*
 // @match        https://oier.group/*
+// @match        https://ys.mihoyo.com/cloud*
 // @updateURL    https://raw.githubusercontent.com/lscminxi/hydro-better/main/Hydro-UI-Beautifier.user.js
 // @downloadURL  https://raw.githubusercontent.com/lscminxi/hydro-better/main/Hydro-UI-Beautifier.user.js
 // @supportURL   https://github.com/lscminxi/hydro-better
@@ -19,6 +20,7 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_openInTab
 // @connect      raw.githubusercontent.com
 // @connect      api.github.com
 // @connect      github.com
@@ -33,7 +35,21 @@
     if (window.__HYDRO_BEAUTIFIER_V170__) return;
     window.__HYDRO_BEAUTIFIER_V170__ = true;
 
-    const VERSION = '1.9.0';
+    const hydroHost = '10.3.44.224';
+    const isCloudHost = location.hostname === 'ys.mihoyo.com';
+    const isCloudPage = isCloudHost && (location.pathname === '/cloud' || location.pathname.startsWith('/cloud/'));
+    const isIntranetHydro = location.hostname === hydroHost;
+    const linkedParam = 'hydro-better-linked';
+    if (window === window.top && (isCloudPage || isIntranetHydro) && !new URLSearchParams(location.search).has(linkedParam)) {
+        const target = new URL(isCloudPage ? `http://${hydroHost}/` : 'https://ys.mihoyo.com/cloud/?utm_source=default#/');
+        // 自动打开的标签页不再反向打开来源站点。
+        target.searchParams.set(linkedParam, '1');
+        if (typeof GM_openInTab === 'function') GM_openInTab(target.href, { active: false });
+        else window.open(target.href, '_blank', 'noopener');
+    }
+    if (isCloudHost) return;
+
+    const VERSION = '1.10.0';
     // 自动更新：源仓库固定指向本脚本的 GitHub 仓库，raw 地址即 @downloadURL。
     const UPDATE = {
         repo: 'lscminxi/hydro-better',
