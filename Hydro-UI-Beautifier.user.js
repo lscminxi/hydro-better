@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hydro UI Beautifier
 // @namespace    https://zsoj.gbfish.cn/
-// @version      1.10.0
+// @version      1.11.0
 // @description  Hydro 全站美化
 // @author       lrbkdgw
 // @match        https://zsoj.gbfish.cn/*
@@ -12,7 +12,6 @@
 // @match        https://10.3.44.224:*
 // @match        https://hydro.ac/*
 // @match        https://oier.group/*
-// @match        https://ys.mihoyo.com/cloud*
 // @updateURL    https://raw.githubusercontent.com/lscminxi/hydro-better/main/Hydro-UI-Beautifier.user.js
 // @downloadURL  https://raw.githubusercontent.com/lscminxi/hydro-better/main/Hydro-UI-Beautifier.user.js
 // @supportURL   https://github.com/lscminxi/hydro-better
@@ -20,13 +19,12 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @grant        GM_openInTab
 // @connect      raw.githubusercontent.com
 // @connect      api.github.com
 // @connect      github.com
 // @connect      codeload.github.com
 // @connect      objects.githubusercontent.com
-// @run-at       document-idle
+// @run-at       document-start
 // ==/UserScript==
 
 (() => {
@@ -35,21 +33,9 @@
     if (window.__HYDRO_BEAUTIFIER_V170__) return;
     window.__HYDRO_BEAUTIFIER_V170__ = true;
 
-    const hydroHost = '10.3.44.224';
-    const isCloudHost = location.hostname === 'ys.mihoyo.com';
-    const isCloudPage = isCloudHost && (location.pathname === '/cloud' || location.pathname.startsWith('/cloud/'));
-    const isIntranetHydro = location.hostname === hydroHost;
-    const linkedParam = 'hydro-better-linked';
-    if (window === window.top && (isCloudPage || isIntranetHydro) && !new URLSearchParams(location.search).has(linkedParam)) {
-        const target = new URL(isCloudPage ? `http://${hydroHost}/` : 'https://ys.mihoyo.com/cloud/?utm_source=default#/');
-        // 自动打开的标签页不再反向打开来源站点。
-        target.searchParams.set(linkedParam, '1');
-        if (typeof GM_openInTab === 'function') GM_openInTab(target.href, { active: false });
-        else window.open(target.href, '_blank', 'noopener');
-    }
-    if (isCloudHost) return;
-
-    const VERSION = '1.10.0';
+    // v1.11.0：移除「打开 10.3.44.224 自动打开云原神、打开云原神自动跳回内网」的联动逻辑。
+    // 现在脚本只负责美化，不会自动打开任何标签页。
+    const VERSION = '1.11.0';
     // 自动更新：源仓库固定指向本脚本的 GitHub 仓库，raw 地址即 @downloadURL。
     const UPDATE = {
         repo: 'lscminxi/hydro-better',
@@ -169,6 +155,22 @@
     bg.id = 'hb170-background';
     bg.innerHTML = '<div class="hb170-bg-image"></div><div class="hb170-bg-noise"></div><div class="hb170-bg-overlay"></div>';
     const bgImage = $('.hb170-bg-image', bg), bgOverlay = $('.hb170-bg-overlay', bg), bgNoise = $('.hb170-bg-noise', bg);
+    // document-start 注入：先写好关键变量，避免首屏先渲染原生半透明布局再被改写（工单 #5 闪屏）。
+    try {
+        const bootStyle = document.createElement('style');
+        bootStyle.id = 'hb170-boot-style';
+        bootStyle.textContent = ':root{color-scheme:dark light}html.hb170-bg-active,html.hb170-bg-active body{background-color:#171923!important}';
+        (document.head || document.documentElement).appendChild(bootStyle);
+        // 在解析 HTML 前就挂上背景标记，浏览器不会先把原生白/灰底画出来再翻成毛玻璃。
+        if (window.__HB_BOOT_BG__ !== false) {
+            try {
+                const raw = localStorage.getItem('hydro_beautifier_v170');
+                const cfg = raw ? JSON.parse(raw) : null;
+                const bgOn = cfg ? (cfg.enabled ?? true) && (cfg.transparent ?? true) : true;
+                if (bgOn) document.documentElement.classList.add('hb170-bg-active');
+            } catch (e) { document.documentElement.classList.add('hb170-bg-active'); }
+        }
+    } catch (e) { /* 忽略 */ }
     const style = document.createElement('style');
     style.id = 'hb170-style';
     style.textContent = `
@@ -229,6 +231,101 @@ body:not(.hb170-media-frames) .hb170-media-frame>img,body:not(.hb170-media-frame
 .page--problem_detail body:not(.mode--scratchpad) .main .hb170-card ul.problem__tags>.problem__tag-item{margin:0!important;max-width:100%;border-radius:999px!important;line-height:1.4;overflow-wrap:anywhere}
 .page--problem_detail body:not(.mode--scratchpad) .main .hb170-card ul.problem__tags>.problem__tag-item:not(.icon:empty){padding:.2rem .5rem!important;background-color:var(--hb-panel-fill,#ffffff12)}
 .page--problem_detail body:not(.mode--scratchpad) .main .hb170-card .typo pre:not(:where(.monaco-editor *,.cm-editor *)){max-width:100%;overflow-x:auto;border-radius:clamp(0px,var(--hb170-radius,var(--hb-global-radius)),12px)!important}
+/* ---------------- v1.11.0：补齐工单 #6~#10 的圆角与透明度适配 ---------------- */
+/* 1) 所有区块统一圆角：/home/settings/* 、/domain/* 、/home/security 等页面里的 .section 没有内层 section__body 圆角来源。 */
+body:not(.mode--scratchpad) .main .section,
+body:not(.mode--scratchpad) .main .section__header,
+body:not(.mode--scratchpad) .main .section__body,
+body:not(.mode--scratchpad) .main .section__footer,
+body:not(.mode--scratchpad) .main .section__table-container,
+body:not(.mode--scratchpad) .main .data-table,
+body:not(.mode--scratchpad) .main .record-scroll{
+  border-radius:var(--hb170-radius,var(--hb-global-radius))!important;background-clip:padding-box!important
+}
+body:not(.mode--scratchpad) .main .section>.section__header:first-child,
+body:not(.mode--scratchpad) .main .section__body:first-child,
+body:not(.mode--scratchpad) .main .section__table-container:first-child{border-start-start-radius:inherit!important;border-start-end-radius:inherit!important}
+body:not(.mode--scratchpad) .main .section__body:last-child,
+body:not(.mode--scratchpad) .main .section__footer:last-child,
+body:not(.mode--scratchpad) .main .section__table-container:last-child{border-end-start-radius:inherit!important;border-end-end-radius:inherit!important}
+/* 2) 设置 / 安全 / 域名页面的分区标题（id=password、id=avatar…）与说明块圆角。 */
+body:not(.mode--scratchpad) .main :is(.section__header,.section__body,.typo blockquote,.platform-list__item,.sessionlist__item,.autherlist__item,.form__item,.help-text){
+  overflow-wrap:anywhere
+}
+body:not(.mode--scratchpad) .main :is(.platform-list,.sessionlist,.autherlist){display:grid;gap:.5rem;padding:0;margin:0;list-style:none}
+body:not(.mode--scratchpad) .main :is(.platform-list__item,.sessionlist__item,.autherlist__item){
+  padding:.6rem .75rem;border:1px solid var(--hb-panel-line,#ffffff24)!important;border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 6px),14px)!important;
+  background:var(--hb-panel-fill,#ffffff12)!important
+}
+body:not(.mode--scratchpad) .main :is(.platform-list__item,.sessionlist__item,.autherlist__item)>*{min-width:0}
+/* 3) 表单控件统一圆角，覆盖 home_settings / home_security / domain_* 里的原生 textbox。 */
+body:not(.mode--scratchpad) .main :is(input.textbox,textarea.textbox,select.textbox,.textbox-container>*,.form__item input,.form__item select,.form__item textarea){
+  box-sizing:border-box;max-width:100%;border:1px solid var(--hb-panel-line,#ffffff24)!important;
+  border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 8px),10px)!important;
+  background:var(--hb-panel-fill,#ffffff12)!important;color:var(--hb-text,#f0f0f5)!important;
+  background-clip:padding-box!important
+}
+body:not(.mode--scratchpad) .main :is(input.textbox,textarea.textbox,select.textbox):focus{outline:2px solid var(--hb-accent)!important;outline-offset:1px!important}
+body:not(.mode--scratchpad) .main .textbox-container{border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 8px),10px)!important}
+/* 4) 按钮统一圆角（原生 .button.rounded 只有 2px，观感不统一）。 */
+body:not(.mode--scratchpad) .main :is(button.button,.button,input[type=submit],input[type=button],a.button){
+  border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 6px),12px)!important;
+  max-width:100%;white-space:normal;overflow-wrap:anywhere
+}
+body.hb170-light:not(.mode--scratchpad) .main :is(input.textbox,textarea.textbox,select.textbox){color:var(--hb-text,#303444)!important}
+/* 5) 顶部搜索 / 筛选栏（评测记录、作业、比赛、讨论列表）统一成和题库一致的圆角容器。 */
+body:not(.mode--scratchpad) .main .section__tools{
+  display:flex!important;flex-wrap:wrap;align-items:center;gap:.4rem;
+  min-width:0;max-width:100%;padding:.35rem!important;border-radius:clamp(0px,var(--hb170-radius,var(--hb-global-radius)),16px)!important;
+  background:var(--hb-panel-fill,#ffffff12)!important;border:1px solid var(--hb-panel-line,#ffffff24)!important;background-clip:padding-box!important
+}
+body:not(.mode--scratchpad) .main .section__tools>*{margin:0!important;min-width:0;flex:0 1 auto}
+body:not(.mode--scratchpad) .main .section__tools>form,
+body:not(.mode--scratchpad) .main .section__tools :is(.filter-form,.search){
+  display:flex!important;flex-wrap:wrap;align-items:center;gap:.35rem;min-width:0;flex:1 1 16rem
+}
+body:not(.mode--scratchpad) .main .section__tools :is(input,select,button,.button){
+  min-height:2.1rem;padding:.3rem .55rem!important;
+  border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 10px),9px)!important;
+  border:1px solid var(--hb-panel-line,#ffffff24)!important;background:var(--hb-panel-bg,#1e2130)!important;color:var(--hb-text,#f0f0f5)!important
+}
+body:not(.mode--scratchpad) .main .section__tools :is(input,select){min-width:0;max-width:100%;flex:1 1 8rem}
+body:not(.mode--scratchpad) .main .section__tools :is(select) option{background:var(--hb-panel-bg,#252938);color:var(--hb-text,#f0f0f5)}
+body:not(.mode--scratchpad) .main .section__tools :is(button,.button,input[type=submit]){cursor:pointer}
+body:not(.mode--scratchpad) .main .section__tools :is(.button.primary,button.primary){background:var(--hb-accent)!important;color:var(--hb-panel-control-text,#fff)!important;border-color:var(--hb-accent)!important}
+body:not(.mode--scratchpad) .main .section__tools :is(input,select,button):focus-visible{outline:2px solid var(--hb-accent)!important;outline-offset:1px!important}
+@media(max-width:700px){
+  body:not(.mode--scratchpad) .main .section__tools{align-items:stretch}
+  body:not(.mode--scratchpad) .main .section__tools>*{flex:1 1 100%}
+}
+/* 6) 编辑器（文章编辑 / 讨论编辑 / 设置里的 markdown 框）：透明 + 毛玻璃。 */
+body:not(.mode--scratchpad) .main :is(.textarea-container,.textbox-container):has(>textarea[data-markdown]),
+body:not(.mode--scratchpad) .main :is(textarea[data-markdown]){
+  border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 4px),14px)!important;
+  background:var(--hb-panel-fill,#ffffff12)!important;border:1px solid var(--hb-panel-line,#ffffff24)!important;
+  backdrop-filter:blur(calc(var(--hb-global-blur) * .5));-webkit-backdrop-filter:blur(calc(var(--hb-global-blur) * .5));
+  background-clip:padding-box!important
+}
+body:not(.mode--scratchpad) .main textarea[data-markdown]{
+  min-height:16rem;padding:.85rem!important;border:0!important;background:transparent!important;
+  color:var(--hb-text,#f0f0f5)!important;line-height:1.65;resize:vertical
+}
+body:not(.mode--scratchpad) .main :is(.textarea-container,.textbox-container):has(>textarea[data-markdown]):focus-within{outline:2px solid var(--hb-accent)!important;outline-offset:1px!important}
+/* CodeMirror / EasyMDE / Monaco 编辑器外壳跟随卡片圆角与背景。 */
+body:not(.mode--scratchpad) .main :is(.CodeMirror,.CodeMirror-wrap,.cm-editor,.monaco-editor,.EasyMDEContainer){
+  border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 4px),14px)!important;
+  background:var(--hb-panel-fill,#ffffff12)!important;background-clip:padding-box!important;overflow:hidden
+}
+body:not(.mode--scratchpad) .main :is(.CodeMirror,.cm-editor,.EasyMDEContainer .CodeMirror){border:1px solid var(--hb-panel-line,#ffffff24)!important}
+body:not(.mode--scratchpad) .main :is(.editor-toolbar,.EasyMDEContainer .editor-toolbar){
+  border:0!important;border-block-end:1px solid var(--hb-panel-line,#ffffff24)!important;
+  border-start-start-radius:inherit!important;border-start-end-radius:inherit!important;background:transparent!important
+}
+/* 7) 学术页：卡片圆角与不透明底在首帧就生效，避免"等脚本扫描时才变圆角"的观感（工单 #6）。 */
+:is(#academic-root,.academic-root):not(:where(.hb170-ac,.hb170-academic)) .ac-card{
+  border-radius:var(--hb-global-radius)!important;background-clip:padding-box!important
+}
+#academic-root .ac-list-layout>*,.academic-root .ac-list-layout>*{min-width:0}
 /* 代码块实色化：背景图/半透明卡片不会再透过 pre，保证代码始终清晰可读。 */
 body:not(.mode--scratchpad){--hb170-code-bg:#1b2030;--hb170-code-line:rgba(255,255,255,.14);--hb170-code-ink:#e7ebf5;--hb170-code-muted:#a7b0c6}
 body:not(.mode--scratchpad).hb170-light{--hb170-code-bg:#f6f8fc;--hb170-code-line:rgba(41,53,79,.18);--hb170-code-ink:#252b3a;--hb170-code-muted:#5b6376}
@@ -686,6 +783,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
     }
     function applyAll(rescan = true, persist = true) {
         const root = document.documentElement, body = document.body, darkRGB = settings.dark ? '29,32,45' : '255,255,255';
+        if (!body) return;
         const vars = {
             '--hb-accent':settings.accent, '--hb-global-bg':`rgba(${darkRGB},${settings.cardOpacity/100})`, '--hb-global-blur':settings.blur+'px', '--hb-global-radius':settings.radius+'px',
             '--hb-global-border':settings.border ? rgba(settings.dark?'#ffffff':'#465069',settings.borderOpacity/100) : 'transparent',
@@ -1081,6 +1179,28 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         }
     }
 
+    // document-start 阶段 body 可能还没解析出来：先注入样式，等 body 就绪再做 DOM 相关初始化。
+    function startWhenBodyReady(run) {
+        if (document.body) return run();
+        let started = false, boundBody = null;
+        const launch = () => {
+            if (!document.body) return;
+            if (started && boundBody === document.body) return;
+            started = true;
+            // 站点框架重建 body 时（Hydro 的 slideout 会替换节点）需要重新挂载并重扫。
+            if (boundBody && boundBody !== document.body) {
+                mount(); applyStickyFooter(); scanCards(); applyLayoutMode();
+            }
+            boundBody = document.body;
+            if (boundBody.dataset.hbBooted === '1') return;
+            boundBody.dataset.hbBooted = '1';
+            run();
+        };
+        new MutationObserver(launch).observe(document.documentElement, { childList: true, subtree: true });
+        document.addEventListener('DOMContentLoaded', launch, { once: true });
+        setTimeout(launch, 3000);
+    }
+    startWhenBodyReady(() => {
     mount(); applyStickyFooter(); syncUI(); refreshBaseFontSize(); applyAll();
     // 自动更新：启动后先渲染页面，再检查（不阻塞首屏）。
     paintUpdateStatus();
@@ -1118,4 +1238,5 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         if (next !== inScratchpad) { inScratchpad = next; applyLayoutMode(); }
     }).observe(document.body,{attributes:true,attributeFilter:['class']});
     console.info(`[Hydro UI Beautifier] v${VERSION} loaded`);
+    });
 })();
