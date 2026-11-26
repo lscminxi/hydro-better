@@ -33,10 +33,11 @@ const fixture = '<div class="main"><div class="section"><div class="section__bod
         };
         check();
         // 用户提供的真实 DOM：隐藏的预建 IDE 不得改变普通题面状态。
-        assert(!doc.body.classList.contains('mode--scratchpad'));
+        assert(!doc.body.classList.contains('hb170-scratchpad-active'));
+        assert(doc.body.classList.contains('mode--scratchpad'), 'must not remove Hydro native mode');
         const dock = doc.querySelector('.scratchpad-container');
         dock.style.display = 'block'; await wait();
-        assert(doc.body.classList.contains('mode--scratchpad'));
+        assert(doc.body.classList.contains('hb170-scratchpad-active'));
         check();
         // Quick Input 可以 portal 到 body；不能依赖它是编辑器的子节点。
         const picker = doc.createElement('div'); picker.className = 'quick-input-widget';
@@ -47,21 +48,24 @@ const fixture = '<div class="main"><div class="section"><div class="section__bod
         assert.equal(w.getComputedStyle(picker.querySelector('input')).color, 'rgb(240, 240, 245)');
         assert.notEqual(w.getComputedStyle(picker.querySelector('.selected')).backgroundColor, 'rgba(0, 0, 0, 0)');
         picker.remove();
+        // Hydro removes native mode before its 500ms close animation ends.
+        doc.body.classList.remove('mode--scratchpad'); await wait();
+        assert(!doc.body.classList.contains('mode--scratchpad'), 'must not re-add native mode during close animation');
         dock.style.display = 'none'; await wait();
-        assert(!doc.body.classList.contains('mode--scratchpad'));
+        assert(!doc.body.classList.contains('hb170-scratchpad-active'));
         check();
         // PJAX 留下旧 mode class，但目标页面的 IDE 仍然隐藏。
         doc.body.classList.add('mode--scratchpad'); await wait();
-        assert(!doc.body.classList.contains('mode--scratchpad'));
+        assert(!doc.body.classList.contains('hb170-scratchpad-active'));
         check();
         // 隐藏祖先的情形也不能误判为 IDE 已打开。
         const wrapper = doc.createElement('div'); dock.before(wrapper); wrapper.append(dock);
         wrapper.style.display = 'none'; dock.style.display = 'block'; await wait();
-        assert(!doc.body.classList.contains('mode--scratchpad'));
+        assert(!doc.body.classList.contains('hb170-scratchpad-active'));
         wrapper.style.display = 'block'; await wait();
-        assert(doc.body.classList.contains('mode--scratchpad'));
+        assert(doc.body.classList.contains('hb170-scratchpad-active'));
         dock.style.display = 'none'; await wait();
-        assert(!doc.body.classList.contains('mode--scratchpad'));
+        assert(!doc.body.classList.contains('hb170-scratchpad-active'));
         // PJAX 保留 body 和 DOM，仅清空根 style；原版本遗漏的场景。
         root.removeAttribute('style'); await wait(); check();
         root.style.setProperty('--hb-native-bg', 'transparent'); await wait(); check();
