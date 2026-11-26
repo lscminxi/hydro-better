@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hydro UI Beautifier
 // @namespace    https://zsoj.gbfish.cn/
-// @version      1.14.1
+// @version      1.14.2
 // @description  Hydro 全站美化
 // @author       lrbkdgw
 // @match        https://zsoj.gbfish.cn/*
@@ -35,7 +35,7 @@
 
     // v1.11.0：移除「打开 10.3.44.224 自动打开云原神、打开云原神自动跳回内网」的联动逻辑。
     // 现在脚本只负责美化，不会自动打开任何标签页。
-    const VERSION = '1.14.1';
+    const VERSION = '1.14.2';
     // 自动更新：源仓库固定指向本脚本的 GitHub 仓库，raw 地址即 @downloadURL。
     const UPDATE = {
         repo: 'lscminxi/hydro-better',
@@ -384,11 +384,11 @@ body:not(.mode--scratchpad) .main :is(.editor-toolbar){
 body:not(.mode--scratchpad) .main :is(.article-editor,.blog-editor,.md-editor-wrapper){min-width:0;max-width:100%}
 /* 6b) 在线 IDE（Hydro scratchpad / 程序坞）：跟随主题的玻璃样式，不再是一片原生白底。 */
 body.mode--scratchpad{
-  --hb170-sp-bg:rgba(24,27,38,.92);--hb170-sp-panel:rgba(38,42,58,.9);--hb170-sp-line:rgba(255,255,255,.14);
+  --hb170-sp-bg:var(--hb-global-bg);--hb170-sp-panel:var(--hb-global-bg);--hb170-sp-line:rgba(255,255,255,.14);
   --hb170-sp-ink:#eef1f8;--hb170-sp-muted:#b3bacb;--hb170-sp-title:rgba(113,134,245,.92)
 }
 body.mode--scratchpad.hb170-light{
-  --hb170-sp-bg:rgba(248,250,255,.94);--hb170-sp-panel:rgba(238,242,250,.94);--hb170-sp-line:rgba(41,53,79,.16);
+  --hb170-sp-bg:var(--hb-global-bg);--hb170-sp-panel:var(--hb-global-bg);--hb170-sp-line:rgba(41,53,79,.16);
   --hb170-sp-ink:#242a3a;--hb170-sp-muted:#5b6376;--hb170-sp-title:rgba(71,120,213,.95)
 }
 body.mode--scratchpad :is(.scratchpad-container,#scratchpad){
@@ -434,7 +434,7 @@ body.mode--scratchpad :is(.monaco-editor,.cm-s-vjcm,.CodeMirror) :is(.monaco-edi
 }
 body.mode--scratchpad .cm-s-vjcm{color:var(--hb170-sp-ink)!important;background:var(--hb170-sp-bg)!important}
 /* 评测记录 / 预测试面板里的表格也统一配色。 */
-body.mode--scratchpad :is(.section,.data-table,.section__table-container,.scratchpad__records__table){
+body.mode--scratchpad .scratchpad-container :is(.section,.data-table,.section__table-container,.scratchpad__records__table){
   background:var(--hb170-sp-panel)!important;color:var(--hb170-sp-ink)!important;border-color:var(--hb170-sp-line)!important
 }
 body.mode--scratchpad :is(.section__header,.section__body,.data-table th,.data-table td){
@@ -735,6 +735,19 @@ body.mode--scratchpad :is(input,textarea,.inputarea){background-color:var(--hb17
 body.mode--scratchpad.hb170-light :is(input,textarea){color-scheme:light}
 body.mode--scratchpad:not(.hb170-light) .monaco-editor .mtk1{color:var(--hb170-sp-ink)!important}
 body.mode--scratchpad .monaco-editor .cursor{color:var(--hb170-sp-ink)!important;border-color:var(--hb170-sp-ink)!important}
+/* IDE 只在最外层叠一层卡片底色；编辑器内部透明，避免多层底色累加遮住壁纸。 */
+body.mode--scratchpad .scratchpad-container{
+  background:var(--hb-global-bg)!important;
+  backdrop-filter:blur(var(--hb-global-blur))!important;-webkit-backdrop-filter:blur(var(--hb-global-blur))!important
+}
+body.mode--scratchpad #scratchpad{
+  background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important
+}
+body.mode--scratchpad .scratchpad-container :is(.ScratchpadMonacoEditor,.monaco-editor,.overflow-guard,.monaco-editor-background,.margin,.monaco-scrollable-element,.minimap,.minimap-decorations-layer,.CodeMirror,.CodeMirror-scroll,.CodeMirror-gutters,.cm-editor,.cm-scroller,.cm-gutters,.cm-s-vjcm,.scratchpad__data-input,.section,.section__table-container,.data-table,.scratchpad__records__table){
+  background:transparent!important
+}
+/* Monaco 的隐藏输入层不能盖住渲染出的代码；自测输入也直接透出外层玻璃。 */
+body.mode--scratchpad .scratchpad-container :is(input,textarea,.inputarea){background:transparent!important}
 /* 将 Hydro 原有选中线和学术页面选中线统一成强调色。 */
 #menu.nav{--hn-active:var(--hb-accent)!important}
 #menu.nav .nav__item.nav--active{border-color:var(--hb-accent)!important}
@@ -962,10 +975,23 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         main.classList.add('hb170-layout-main'); side.classList.add('hb170-layout-side');
         activeLayout = next;
     }
+    // Hydro 普通题面也预建一个 display:none 的程序坞，存在不代表启用。
+    function syncScratchpadMode() {
+        const body = document.body;
+        if (!body) return;
+        const container = document.querySelector('.scratchpad-container') || document.querySelector('#scratchpad');
+        let active = !!container;
+        for (let el = container; el && el !== body; el = el.parentElement) {
+            const css = getComputedStyle(el);
+            if (el.hidden || css.display === 'none' || css.visibility === 'hidden') { active = false; break; }
+        }
+        if (body.classList.contains('mode--scratchpad') !== active) body.classList.toggle('mode--scratchpad', active);
+    }
     let expectedRootVars = {}, expectedBodyClasses = {};
     function applyAll(rescan = true, persist = true) {
         const root = document.documentElement, body = document.body, darkRGB = settings.dark ? '29,32,45' : '255,255,255';
         if (!body) return;
+        syncScratchpadMode();
         const vars = {
             '--hb-accent':settings.accent, '--hb-global-bg':`rgba(${darkRGB},${settings.cardOpacity/100})`, '--hb-global-blur':settings.blur+'px', '--hb-global-radius':settings.radius+'px',
             '--hb-global-border':settings.border ? rgba(settings.dark?'#ffffff':'#465069',settings.borderOpacity/100) : 'transparent',
@@ -1436,8 +1462,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         }, 350);
     });
     observer.observe(document.documentElement,{childList:true,subtree:true});
-    // 程序坞在部分版本里直接渲染 #scratchpad，这里补齐 mode--scratchpad，保证 IDE 样式生效。
-    if (document.querySelector('#scratchpad,.scratchpad-container')) document.body.classList.add('mode--scratchpad');
+    syncScratchpadMode();
     let inScratchpad = document.body.classList.contains('mode--scratchpad');
     // PJAX 可保留 body，却替换 html 的 style/class 或原卡片的 class。
     // 比较脚本拥有的状态，不比较站点自己的属性；自身写入不会再次触发修复。
@@ -1461,7 +1486,10 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         }, 0);
     }
     new MutationObserver(records=>{
-        if (records.some(r => r.target === document.body)) {
+        const container = document.querySelector('.scratchpad-container') || document.querySelector('#scratchpad');
+        if (records.some(r => r.target === document.body || r.target === container ||
+            (container && r.target.contains?.(container)))) {
+            syncScratchpadMode();
             const next = document.body.classList.contains('mode--scratchpad');
             if (next !== inScratchpad) { inScratchpad = next; applyLayoutMode(); }
         }
