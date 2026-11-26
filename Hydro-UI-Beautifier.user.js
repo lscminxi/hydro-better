@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hydro UI Beautifier
 // @namespace    https://zsoj.gbfish.cn/
-// @version      1.8.1
+// @version      1.8.2
 // @description  Hydro 全站美化
 // @author       lrbkdgw
 // @match        https://zsoj.gbfish.cn/*
@@ -12,7 +12,6 @@
 // @match        https://10.3.44.224:*
 // @match        https://hydro.ac/*
 // @match        https://oier.group/*
-// @match        https://10.3.44.224/*
 // @updateURL    https://raw.githubusercontent.com/lscminxi/hydro-better/main/Hydro-UI-Beautifier.user.js
 // @downloadURL  https://raw.githubusercontent.com/lscminxi/hydro-better/main/Hydro-UI-Beautifier.user.js
 // @supportURL   https://github.com/lscminxi/hydro-better
@@ -32,7 +31,7 @@
     if (window.__HYDRO_BEAUTIFIER_V170__) return;
     window.__HYDRO_BEAUTIFIER_V170__ = true;
 
-    const VERSION = '1.8.1';
+    const VERSION = '1.8.2';
     // 自动更新：源仓库固定指向本脚本的 GitHub 仓库，raw 地址即 @downloadURL。
     const UPDATE = {
         repo: 'lscminxi/hydro-better',
