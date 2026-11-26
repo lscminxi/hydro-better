@@ -39,6 +39,25 @@ const fixture = '<div class="main"><div class="section"><div class="section__bod
         dock.style.display = 'block'; await wait();
         assert(doc.body.classList.contains('hb170-scratchpad-active'));
         check();
+        // 真实结构：loader 与已挂载编辑器是兄弟，透明后不能透出占位动画。
+        const host = doc.createElement('div'); host.className = 'ScratchpadMonacoEditor';
+        host.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+        dock.append(host);
+        const loader = host.firstElementChild;
+        assert.notEqual(w.getComputedStyle(loader).display, 'none', 'keep genuine loading indicator');
+        const editorDOM = doc.createElement('div'); editorDOM.className = 'monaco-editor';
+        editorDOM.innerHTML = '<div class="view-lines"></div><textarea class="inputarea"></textarea><div class="minimap"><canvas></canvas></div>';
+        host.append(editorDOM);
+        assert.equal(w.getComputedStyle(loader).display, 'none', 'hide only mounted editor placeholder');
+        editorDOM.remove();
+        assert.notEqual(w.getComputedStyle(loader).display, 'none', 'restore loader if editor unmounts');
+        const output = doc.createElement('div'); output.className = 'scratchpad__data-input';
+        output.innerHTML = '<pre contenteditable="true">4\n</pre>'; dock.append(output);
+        const out = output.firstElementChild;
+        assert.equal(w.getComputedStyle(out).backgroundColor, 'rgba(0, 0, 0, 0)');
+        assert.equal(w.getComputedStyle(out).color, 'rgb(238, 241, 248)');
+        assert.equal(out.textContent, '4\n', 'preserve actual output');
+        output.remove(); host.remove();
         // Quick Input 可以 portal 到 body；不能依赖它是编辑器的子节点。
         const picker = doc.createElement('div'); picker.className = 'quick-input-widget';
         picker.innerHTML = '<div class="monaco-inputbox"><input placeholder="Theme"></div><div class="quick-input-list"><div class="monaco-list-row selected"><span class="label-name">Active4D</span></div></div>';
