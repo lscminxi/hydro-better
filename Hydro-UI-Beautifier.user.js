@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hydro UI Beautifier
 // @namespace    https://zsoj.gbfish.cn/
-// @version      1.14.3
+// @version      1.14.4
 // @description  Hydro 全站美化
 // @author       lrbkdgw
 // @match        https://zsoj.gbfish.cn/*
@@ -35,7 +35,7 @@
 
     // v1.11.0：移除「打开 10.3.44.224 自动打开云原神、打开云原神自动跳回内网」的联动逻辑。
     // 现在脚本只负责美化，不会自动打开任何标签页。
-    const VERSION = '1.14.3';
+    const VERSION = '1.14.4';
     // 自动更新：源仓库固定指向本脚本的 GitHub 仓库，raw 地址即 @downloadURL。
     const UPDATE = {
         repo: 'lscminxi/hydro-better',
@@ -189,19 +189,19 @@ body.hb170-bg-active{min-height:100vh;min-height:100dvh;background:transparent!i
 .hb170-sticky-shell>.hb170-sticky-main{flex:1 0 auto!important;min-height:0}
 .hb170-sticky-shell>.hb170-sticky-footer{margin-top:auto!important;flex-shrink:0!important;width:100%}
 body.hb170-transparent .main,body.hb170-transparent #panel,body.hb170-transparent .slideout-panel{background:transparent!important}
-body.hb170-layout:not(.mode--scratchpad) .main{max-width:var(--hb-page-width)!important;width:calc(100% - 32px)!important;margin-inline:auto!important}
+body.hb170-layout:not(.hb170-scratchpad-active) .main{max-width:var(--hb-page-width)!important;width:calc(100% - 32px)!important;margin-inline:auto!important}
 /* Hydro 使用浮动栅格，column-gap 对 float 不生效。以半栏距作为每列的左右内边距。 */
-body.hb170-layout:not(.mode--scratchpad) .main .row:not(.collapse)>:is(.column,.columns){padding-inline:calc(var(--hb-layout-gap) / 2)!important;box-sizing:border-box!important}
-body.hb170-layout.hb170-compact:not(.mode--scratchpad) .main .row{row-gap:8px}
-body.hb170-compact:not(.mode--scratchpad) .main .section.hb170-card{margin-bottom:10px!important}
-body.hb170-layout:not(.mode--scratchpad) .hb170-layout-single>.hb170-layout-main,body.hb170-layout:not(.mode--scratchpad) .hb170-layout-single>.hb170-layout-side{width:100%!important;max-width:100%!important;float:none!important}
+body.hb170-layout:not(.hb170-scratchpad-active) .main .row:not(.collapse)>:is(.column,.columns){padding-inline:calc(var(--hb-layout-gap) / 2)!important;box-sizing:border-box!important}
+body.hb170-layout.hb170-compact:not(.hb170-scratchpad-active) .main .row{row-gap:8px}
+body.hb170-compact:not(.hb170-scratchpad-active) .main .section.hb170-card{margin-bottom:10px!important}
+body.hb170-layout:not(.hb170-scratchpad-active) .hb170-layout-single>.hb170-layout-main,body.hb170-layout:not(.hb170-scratchpad-active) .hb170-layout-single>.hb170-layout-side{width:100%!important;max-width:100%!important;float:none!important}
 @media(min-width:900px){
-  body.hb170-layout:not(.mode--scratchpad) .hb170-layout-wide>.hb170-layout-main{width:calc(100% - var(--hb-side-width,27%))!important;max-width:none!important}
-  body.hb170-layout:not(.mode--scratchpad) .hb170-layout-wide>.hb170-layout-side{width:var(--hb-side-width,27%)!important;max-width:none!important}
+  body.hb170-layout:not(.hb170-scratchpad-active) .hb170-layout-wide>.hb170-layout-main{width:calc(100% - var(--hb-side-width,27%))!important;max-width:none!important}
+  body.hb170-layout:not(.hb170-scratchpad-active) .hb170-layout-wide>.hb170-layout-side{width:var(--hb-side-width,27%)!important;max-width:none!important}
 }
 @media(max-width:600px){
-  body.hb170-layout:not(.mode--scratchpad) .main{width:calc(100% - 16px)!important}
-  body.hb170-layout:not(.mode--scratchpad) .main .row>.columns>.section.hb170-card{margin-inline:0!important}
+  body.hb170-layout:not(.hb170-scratchpad-active) .main{width:calc(100% - 16px)!important}
+  body.hb170-layout:not(.hb170-scratchpad-active) .main .row>.columns>.section.hb170-card{margin-inline:0!important}
 }
 /* Leave transform, opacity and transition to Hydro's original section reveal. */
 .hb170-card{box-sizing:border-box!important;border-radius:var(--hb170-radius,var(--hb-global-radius))!important;background:var(--hb170-bg,var(--hb-global-bg))!important;border:var(--hb170-border-width,1px) solid var(--hb-global-border)!important;backdrop-filter:blur(var(--hb170-blur,var(--hb-global-blur)))!important;-webkit-backdrop-filter:blur(var(--hb170-blur,var(--hb-global-blur)))!important;box-shadow:var(--hb-global-shadow)!important;background-clip:padding-box!important}
@@ -230,230 +230,230 @@ body:not(.hb170-media-frames) .hb170-media-frame>img,body:not(.hb170-media-frame
 .main .section.side.section--problem-sidebar.hb170-card>ol.menu>.menu__item>.menu__link{box-sizing:border-box;max-width:100%;padding:.6rem .7rem!important;line-height:1.35;border-inline-start:0!important;border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - var(--hb-problem-menu-inset) / 2),12px)!important}
 .main .section.side.section--problem-sidebar.hb170-card>ol.menu>.menu__item>.menu__link:is([name="problem-sidebar__open-scratchpad"],[name="problem-sidebar__close-scratchpad"],[data-global-hotkey="alt+q" i]){margin-block:.15rem;background:color-mix(in srgb,var(--hb-accent) 16%,transparent)!important;color:var(--hb-text,#f0f0f5)!important}
 .main .section.side.section--problem-sidebar.hb170-card>ol.menu>.menu__item>.menu__link:is([name="problem-sidebar__open-scratchpad"],[name="problem-sidebar__close-scratchpad"],[data-global-hotkey="alt+q" i]):is(:hover,:focus-visible){background:color-mix(in srgb,var(--hb-accent) 26%,transparent)!important}
-.page--problem_detail body:not(.mode--scratchpad) .main .hb170-card ul.problem__tags{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .45rem;padding-inline-start:0;list-style:none}
-.page--problem_detail body:not(.mode--scratchpad) .main .hb170-card ul.problem__tags>.problem__tag-item{margin:0!important;max-width:100%;border-radius:999px!important;line-height:1.4;overflow-wrap:anywhere}
-.page--problem_detail body:not(.mode--scratchpad) .main .hb170-card ul.problem__tags>.problem__tag-item:not(.icon:empty){padding:.2rem .5rem!important;background-color:var(--hb-panel-fill,#ffffff12)}
-.page--problem_detail body:not(.mode--scratchpad) .main .hb170-card .typo pre:not(:where(.monaco-editor *,.cm-editor *)){max-width:100%;overflow-x:auto;border-radius:clamp(0px,var(--hb170-radius,var(--hb-global-radius)),12px)!important}
+.page--problem_detail body:not(.hb170-scratchpad-active) .main .hb170-card ul.problem__tags{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .45rem;padding-inline-start:0;list-style:none}
+.page--problem_detail body:not(.hb170-scratchpad-active) .main .hb170-card ul.problem__tags>.problem__tag-item{margin:0!important;max-width:100%;border-radius:999px!important;line-height:1.4;overflow-wrap:anywhere}
+.page--problem_detail body:not(.hb170-scratchpad-active) .main .hb170-card ul.problem__tags>.problem__tag-item:not(.icon:empty){padding:.2rem .5rem!important;background-color:var(--hb-panel-fill,#ffffff12)}
+.page--problem_detail body:not(.hb170-scratchpad-active) .main .hb170-card .typo pre:not(:where(.monaco-editor *,.cm-editor *)){max-width:100%;overflow-x:auto;border-radius:clamp(0px,var(--hb170-radius,var(--hb-global-radius)),12px)!important}
 /* ---------------- v1.11.0：补齐工单 #6~#10 的圆角与透明度适配 ---------------- */
 /* 1) 所有区块统一圆角：/home/settings/* 、/domain/* 、/home/security 等页面里的 .section 没有内层 section__body 圆角来源。 */
-body:not(.mode--scratchpad) .main .section,
-body:not(.mode--scratchpad) .main .section__header,
-body:not(.mode--scratchpad) .main .section__body,
-body:not(.mode--scratchpad) .main .section__footer,
-body:not(.mode--scratchpad) .main .section__table-container,
-body:not(.mode--scratchpad) .main .data-table,
-body:not(.mode--scratchpad) .main .record-scroll{
+body:not(.hb170-scratchpad-active) .main .section,
+body:not(.hb170-scratchpad-active) .main .section__header,
+body:not(.hb170-scratchpad-active) .main .section__body,
+body:not(.hb170-scratchpad-active) .main .section__footer,
+body:not(.hb170-scratchpad-active) .main .section__table-container,
+body:not(.hb170-scratchpad-active) .main .data-table,
+body:not(.hb170-scratchpad-active) .main .record-scroll{
   border-radius:var(--hb170-radius,var(--hb-global-radius))!important;background-clip:padding-box!important
 }
-body:not(.mode--scratchpad) .main .section>.section__header:first-child,
-body:not(.mode--scratchpad) .main .section__body:first-child,
-body:not(.mode--scratchpad) .main .section__table-container:first-child{border-start-start-radius:inherit!important;border-start-end-radius:inherit!important}
-body:not(.mode--scratchpad) .main .section__body:last-child,
-body:not(.mode--scratchpad) .main .section__footer:last-child,
-body:not(.mode--scratchpad) .main .section__table-container:last-child{border-end-start-radius:inherit!important;border-end-end-radius:inherit!important}
+body:not(.hb170-scratchpad-active) .main .section>.section__header:first-child,
+body:not(.hb170-scratchpad-active) .main .section__body:first-child,
+body:not(.hb170-scratchpad-active) .main .section__table-container:first-child{border-start-start-radius:inherit!important;border-start-end-radius:inherit!important}
+body:not(.hb170-scratchpad-active) .main .section__body:last-child,
+body:not(.hb170-scratchpad-active) .main .section__footer:last-child,
+body:not(.hb170-scratchpad-active) .main .section__table-container:last-child{border-end-start-radius:inherit!important;border-end-end-radius:inherit!important}
 /* 2) 设置 / 安全 / 域名页面的分区标题（id=password、id=avatar…）与说明块圆角。 */
-body:not(.mode--scratchpad) .main :is(.section__header,.section__body,.typo blockquote,.platform-list__item,.sessionlist__item,.autherlist__item,.form__item,.help-text){
+body:not(.hb170-scratchpad-active) .main :is(.section__header,.section__body,.typo blockquote,.platform-list__item,.sessionlist__item,.autherlist__item,.form__item,.help-text){
   overflow-wrap:anywhere
 }
-body:not(.mode--scratchpad) .main :is(.platform-list,.sessionlist,.autherlist){display:grid;gap:.5rem;padding:0;margin:0;list-style:none}
-body:not(.mode--scratchpad) .main :is(.platform-list__item,.sessionlist__item,.autherlist__item){
+body:not(.hb170-scratchpad-active) .main :is(.platform-list,.sessionlist,.autherlist){display:grid;gap:.5rem;padding:0;margin:0;list-style:none}
+body:not(.hb170-scratchpad-active) .main :is(.platform-list__item,.sessionlist__item,.autherlist__item){
   padding:.6rem .75rem;border:1px solid var(--hb-panel-line,#ffffff24)!important;border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 6px),14px)!important;
   background:var(--hb-panel-fill,#ffffff12)!important
 }
-body:not(.mode--scratchpad) .main :is(.platform-list__item,.sessionlist__item,.autherlist__item)>*{min-width:0}
+body:not(.hb170-scratchpad-active) .main :is(.platform-list__item,.sessionlist__item,.autherlist__item)>*{min-width:0}
 /* 3) 表单控件统一圆角，覆盖 home_settings / home_security / domain_* 里的原生 textbox。 */
-body:not(.mode--scratchpad) .main :is(input.textbox,textarea.textbox,select.textbox,.textbox-container>*,.form__item input,.form__item select,.form__item textarea){
+body:not(.hb170-scratchpad-active) .main :is(input.textbox,textarea.textbox,select.textbox,.textbox-container>*,.form__item input,.form__item select,.form__item textarea){
   box-sizing:border-box;max-width:100%;border:1px solid var(--hb-panel-line,#ffffff24)!important;
   border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 8px),10px)!important;
   background:var(--hb-panel-fill,#ffffff12)!important;color:var(--hb-text,#f0f0f5)!important;
   background-clip:padding-box!important
 }
-body:not(.mode--scratchpad) .main :is(input.textbox,textarea.textbox,select.textbox):focus{outline:2px solid var(--hb-accent)!important;outline-offset:1px!important}
-body:not(.mode--scratchpad) .main .textbox-container{border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 8px),10px)!important}
+body:not(.hb170-scratchpad-active) .main :is(input.textbox,textarea.textbox,select.textbox):focus{outline:2px solid var(--hb-accent)!important;outline-offset:1px!important}
+body:not(.hb170-scratchpad-active) .main .textbox-container{border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 8px),10px)!important}
 /* 4) 按钮统一圆角（原生 .button.rounded 只有 2px，观感不统一）。 */
-body:not(.mode--scratchpad) .main :is(button.button,.button,input[type=submit],input[type=button],a.button){
+body:not(.hb170-scratchpad-active) .main :is(button.button,.button,input[type=submit],input[type=button],a.button){
   border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 6px),12px)!important;
   max-width:100%;white-space:normal;overflow-wrap:anywhere
 }
-body.hb170-light:not(.mode--scratchpad) .main :is(input.textbox,textarea.textbox,select.textbox){color:var(--hb-text,#303444)!important}
+body.hb170-light:not(.hb170-scratchpad-active) .main :is(input.textbox,textarea.textbox,select.textbox){color:var(--hb-text,#303444)!important}
 /* 5) 顶部搜索 / 筛选栏（评测记录、作业、比赛、讨论列表）统一成和题库一致的圆角容器。 */
 /* Hydro 的工具栏改为静态 flex 排列，统一控件高度与间距，避免与标题重叠。 */
-body:not(.mode--scratchpad) .main .section__header:has(>.section__tools){
+body:not(.hb170-scratchpad-active) .main .section__header:has(>.section__tools){
   display:flex!important;flex-wrap:wrap;align-items:flex-start;gap:.4rem .8rem;padding-block-end:.6rem
 }
-body:not(.mode--scratchpad) .main .section__header:has(>.section__tools)>.section__title{flex:1 1 14rem;min-width:0;overflow-wrap:anywhere}
-body:not(.mode--scratchpad) .main .section__tools{
+body:not(.hb170-scratchpad-active) .main .section__header:has(>.section__tools)>.section__title{flex:1 1 14rem;min-width:0;overflow-wrap:anywhere}
+body:not(.hb170-scratchpad-active) .main .section__tools{
   position:static!important;inset:auto!important;margin-inline-start:auto!important;
   display:flex!important;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:.4rem;
   max-width:100%;min-width:0;padding:0!important;background:transparent!important;border:0!important;
   border-radius:0!important;box-shadow:none!important;font-size:inherit!important
 }
-body:not(.mode--scratchpad) .main .section__tools>*{margin:0!important;min-width:0;flex:0 1 auto}
-body:not(.mode--scratchpad) .main .section__tools>form,
-body:not(.mode--scratchpad) .main .section__tools :is(.filter-form,form.filter-form){
+body:not(.hb170-scratchpad-active) .main .section__tools>*{margin:0!important;min-width:0;flex:0 1 auto}
+body:not(.hb170-scratchpad-active) .main .section__tools>form,
+body:not(.hb170-scratchpad-active) .main .section__tools :is(.filter-form,form.filter-form){
   display:flex!important;flex-wrap:wrap;align-items:center;gap:.4rem;min-width:0;margin:0!important
 }
-body:not(.mode--scratchpad) .main .section__tools :is(input,select,button,.button,label){
+body:not(.hb170-scratchpad-active) .main .section__tools :is(input,select,button,.button,label){
   box-sizing:border-box;margin:0!important;vertical-align:middle
 }
-body:not(.mode--scratchpad) .main .section__tools :is(input.textbox,select,.select,input[type=text],input[type=search]){
+body:not(.hb170-scratchpad-active) .main .section__tools :is(input.textbox,select,.select,input[type=text],input[type=search]){
   flex:0 1 11rem;min-width:8rem;max-width:100%;height:2.15rem!important;min-height:2.15rem;
   padding:0 .6rem!important;line-height:2.1!important;
   border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 10px),9px)!important;
   border:1px solid var(--hb-panel-line,#ffffff24)!important;background:var(--hb-panel-bg,#1e2130)!important;
   color:var(--hb-text,#f0f0f5)!important
 }
-body:not(.mode--scratchpad) .main .section__tools :is(button,.button,input[type=submit]){
+body:not(.hb170-scratchpad-active) .main .section__tools :is(button,.button,input[type=submit]){
   flex:0 0 auto;height:2.15rem!important;min-height:2.15rem;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;
   padding:0 .8rem!important;line-height:1.2!important;border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 10px),9px)!important;
   border:1px solid var(--hb-panel-line,#ffffff24)!important;background:var(--hb-panel-bg,#1e2130)!important;color:var(--hb-text,#f0f0f5)!important;cursor:pointer
 }
-body:not(.mode--scratchpad) .main .section__tools :is(button,.button):is(.primary,[type=submit]){background:var(--hb-accent)!important;border-color:var(--hb-accent)!important;color:var(--hb-panel-control-text,#fff)!important}
-body:not(.mode--scratchpad) .main .section__tools :is(select) option{background:var(--hb-panel-bg,#252938);color:var(--hb-text,#f0f0f5)}
-body:not(.mode--scratchpad) .main .section__tools :is(input,select,button,.button):is(:hover){border-color:var(--hb-accent)!important}
-body:not(.mode--scratchpad) .main .section__tools :is(input,select,button):focus-visible{outline:2px solid var(--hb-accent)!important;outline-offset:1px!important}
-body:not(.mode--scratchpad) .main .section__tools .icon{font-size:1em;margin-inline-end:.25rem}
+body:not(.hb170-scratchpad-active) .main .section__tools :is(button,.button):is(.primary,[type=submit]){background:var(--hb-accent)!important;border-color:var(--hb-accent)!important;color:var(--hb-panel-control-text,#fff)!important}
+body:not(.hb170-scratchpad-active) .main .section__tools :is(select) option{background:var(--hb-panel-bg,#252938);color:var(--hb-text,#f0f0f5)}
+body:not(.hb170-scratchpad-active) .main .section__tools :is(input,select,button,.button):is(:hover){border-color:var(--hb-accent)!important}
+body:not(.hb170-scratchpad-active) .main .section__tools :is(input,select,button):focus-visible{outline:2px solid var(--hb-accent)!important;outline-offset:1px!important}
+body:not(.hb170-scratchpad-active) .main .section__tools .icon{font-size:1em;margin-inline-end:.25rem}
 /* 作业列表里的「查看：<select>」这类内联选择器，和筛选条保持同一行高与圆角。 */
-body:not(.mode--scratchpad) .main .section__tools>span:has(>select),
-body:not(.mode--scratchpad) .main .section__tools>label:has(>select){display:inline-flex;align-items:center;gap:.35rem;color:var(--hb-panel-muted,#b5bacb)}
-body:not(.mode--scratchpad) .main .section__tools>span>select,
-body:not(.mode--scratchpad) .main .section__tools>label>select{flex:0 0 auto}
+body:not(.hb170-scratchpad-active) .main .section__tools>span:has(>select),
+body:not(.hb170-scratchpad-active) .main .section__tools>label:has(>select){display:inline-flex;align-items:center;gap:.35rem;color:var(--hb-panel-muted,#b5bacb)}
+body:not(.hb170-scratchpad-active) .main .section__tools>span>select,
+body:not(.hb170-scratchpad-active) .main .section__tools>label>select{flex:0 0 auto}
 @media(max-width:900px){
-  body:not(.mode--scratchpad) .main .section__header:has(>.section__tools){gap:.5rem}
-  body:not(.mode--scratchpad) .main .section__tools{justify-content:flex-start;margin-inline-start:0!important;width:100%}
-  body:not(.mode--scratchpad) .main .section__tools :is(input.textbox,select,.select){flex:1 1 8rem}
+  body:not(.hb170-scratchpad-active) .main .section__header:has(>.section__tools){gap:.5rem}
+  body:not(.hb170-scratchpad-active) .main .section__tools{justify-content:flex-start;margin-inline-start:0!important;width:100%}
+  body:not(.hb170-scratchpad-active) .main .section__tools :is(input.textbox,select,.select){flex:1 1 8rem}
 }
 /* 6) 编辑器（文章编辑 / 讨论编辑 / 问题编辑）：md-editor 的编辑区、分屏区、预览区统一圆角 + 半透明 + 毛玻璃。 */
-body:not(.mode--scratchpad) .main :is(.md-editor,.md-editor-wrapper,.md-editor-content,.md-editor-inner,.md-editor-preview-wrapper){
+body:not(.hb170-scratchpad-active) .main :is(.md-editor,.md-editor-wrapper,.md-editor-content,.md-editor-inner,.md-editor-preview-wrapper){
   border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 4px),14px)!important;
   background:var(--hb-panel-fill,#ffffff12)!important;background-clip:padding-box!important;overflow:hidden;min-width:0
 }
-body:not(.mode--scratchpad) .main .md-editor{
+body:not(.hb170-scratchpad-active) .main .md-editor{
   border:1px solid var(--hb-panel-line,#ffffff24)!important;
   backdrop-filter:blur(calc(var(--hb-global-blur) * .5));-webkit-backdrop-filter:blur(calc(var(--hb-global-blur) * .5))
 }
-body:not(.mode--scratchpad) .main .md-editor :is(.md-editor-toolbar-wrapper,.md-editor-toolbar){
+body:not(.hb170-scratchpad-active) .main .md-editor :is(.md-editor-toolbar-wrapper,.md-editor-toolbar){
   border:0!important;border-block-end:1px solid var(--hb-panel-line,#ffffff24)!important;
   background:transparent!important;border-radius:0!important
 }
-body:not(.mode--scratchpad) .main .md-editor :is(.md-editor-input-wrapper,.cm-editor,.cm-scroller,.cm-gutters){
+body:not(.hb170-scratchpad-active) .main .md-editor :is(.md-editor-input-wrapper,.cm-editor,.cm-scroller,.cm-gutters){
   background:transparent!important
 }
-body:not(.mode--scratchpad) .main .md-editor :is(.cm-editor,.md-editor-input-wrapper){
+body:not(.hb170-scratchpad-active) .main .md-editor :is(.cm-editor,.md-editor-input-wrapper){
   border-radius:0 0 clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 6px),12px) clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 6px),12px)!important;
   min-width:0
 }
-body:not(.mode--scratchpad) .main :is(.md-editor-preview,.md-editor-preview-wrapper,.md-editor-resize-operate){
+body:not(.hb170-scratchpad-active) .main :is(.md-editor-preview,.md-editor-preview-wrapper,.md-editor-resize-operate){
   border-radius:0!important
 }
-body:not(.mode--scratchpad) .main .md-editor-preview{
+body:not(.hb170-scratchpad-active) .main .md-editor-preview{
   padding:var(--hb-global-padding)!important;background:var(--hb-panel-fill,#ffffff12)!important;
   color:var(--hb-text,#f0f0f5)!important;overflow:auto
 }
-body:not(.mode--scratchpad) .main .md-editor-preview-wrapper{
+body:not(.hb170-scratchpad-active) .main .md-editor-preview-wrapper{
   border-inline-start:1px solid var(--hb-panel-line,#ffffff24)!important
 }
-body:not(.mode--scratchpad) .main .md-editor :is(.md-editor-footer,.md-editor-footer-navigation){
+body:not(.hb170-scratchpad-active) .main .md-editor :is(.md-editor-footer,.md-editor-footer-navigation){
   border:0!important;border-block-start:1px solid var(--hb-panel-line,#ffffff24)!important;background:transparent!important
 }
-body:not(.mode--scratchpad) .main .md-editor :is(.md-editor-toolbar-item,.md-editor-footer-item){border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 12px),8px)!important}
+body:not(.hb170-scratchpad-active) .main .md-editor :is(.md-editor-toolbar-item,.md-editor-footer-item){border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 12px),8px)!important}
 /* 兼容讨论/设置页的原生 textarea（markdown:true 会渲染成 md-editor，其余仍是 textarea）。 */
-body:not(.mode--scratchpad) .main :is(.textarea-container,.textbox-container):has(>textarea[data-markdown]),
-body:not(.mode--scratchpad) .main textarea[data-markdown]{
+body:not(.hb170-scratchpad-active) .main :is(.textarea-container,.textbox-container):has(>textarea[data-markdown]),
+body:not(.hb170-scratchpad-active) .main textarea[data-markdown]{
   border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 4px),14px)!important;
   background:var(--hb-panel-fill,#ffffff12)!important;border:1px solid var(--hb-panel-line,#ffffff24)!important;
   backdrop-filter:blur(calc(var(--hb-global-blur) * .5));-webkit-backdrop-filter:blur(calc(var(--hb-global-blur) * .5));
   background-clip:padding-box!important
 }
-body:not(.mode--scratchpad) .main textarea[data-markdown]{
+body:not(.hb170-scratchpad-active) .main textarea[data-markdown]{
   min-height:16rem;padding:.85rem!important;border:0!important;background:transparent!important;
   color:var(--hb-text,#f0f0f5)!important;line-height:1.65;resize:vertical
 }
-body:not(.mode--scratchpad) .main :is(.textarea-container,.textbox-container):has(>textarea[data-markdown]):focus-within{outline:2px solid var(--hb-accent)!important;outline-offset:1px!important}
+body:not(.hb170-scratchpad-active) .main :is(.textarea-container,.textbox-container):has(>textarea[data-markdown]):focus-within{outline:2px solid var(--hb-accent)!important;outline-offset:1px!important}
 /* CodeMirror / Monaco 外壳跟随卡片圆角与背景。 */
-body:not(.mode--scratchpad) .main :is(.CodeMirror,.CodeMirror-wrap,.cm-editor,.monaco-editor){
+body:not(.hb170-scratchpad-active) .main :is(.CodeMirror,.CodeMirror-wrap,.cm-editor,.monaco-editor){
   border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 4px),14px)!important;
   background:var(--hb-panel-fill,#ffffff12)!important;background-clip:padding-box!important;overflow:hidden
 }
-body:not(.mode--scratchpad) .main :is(.CodeMirror,.cm-editor){border:1px solid var(--hb-panel-line,#ffffff24)!important}
-body:not(.mode--scratchpad) .main :is(.editor-toolbar){
+body:not(.hb170-scratchpad-active) .main :is(.CodeMirror,.cm-editor){border:1px solid var(--hb-panel-line,#ffffff24)!important}
+body:not(.hb170-scratchpad-active) .main :is(.editor-toolbar){
   border:0!important;border-block-end:1px solid var(--hb-panel-line,#ffffff24)!important;
   border-start-start-radius:inherit!important;border-start-end-radius:inherit!important;background:transparent!important
 }
 /* 文章编写页的三段（meta / 编辑器 / 右侧发布设置）在窄屏也不互相挤压。 */
-body:not(.mode--scratchpad) .main :is(.article-editor,.blog-editor,.md-editor-wrapper){min-width:0;max-width:100%}
+body:not(.hb170-scratchpad-active) .main :is(.article-editor,.blog-editor,.md-editor-wrapper){min-width:0;max-width:100%}
 /* 6b) 在线 IDE（Hydro scratchpad / 程序坞）：跟随主题的玻璃样式，不再是一片原生白底。 */
-body.mode--scratchpad{
+body.hb170-scratchpad-active{
   --hb170-sp-bg:var(--hb-global-bg);--hb170-sp-panel:var(--hb-global-bg);--hb170-sp-line:rgba(255,255,255,.14);
   --hb170-sp-ink:#eef1f8;--hb170-sp-muted:#b3bacb;--hb170-sp-title:rgba(113,134,245,.92)
 }
-body.mode--scratchpad.hb170-light{
+body.hb170-scratchpad-active.hb170-light{
   --hb170-sp-bg:var(--hb-global-bg);--hb170-sp-panel:var(--hb-global-bg);--hb170-sp-line:rgba(41,53,79,.16);
   --hb170-sp-ink:#242a3a;--hb170-sp-muted:#5b6376;--hb170-sp-title:rgba(71,120,213,.95)
 }
-body.mode--scratchpad :is(.scratchpad-container,#scratchpad){
+body.hb170-scratchpad-active :is(.scratchpad-container,#scratchpad){
   background:var(--hb170-sp-bg)!important;color:var(--hb170-sp-ink)!important;
   -webkit-backdrop-filter:blur(var(--hb-global-blur));backdrop-filter:blur(var(--hb-global-blur))
 }
-body.mode--scratchpad :is(.scratchpad__panel-title){
+body.hb170-scratchpad-active :is(.scratchpad__panel-title){
   background:var(--hb170-sp-title)!important;color:#fff!important;
   font-weight:600;letter-spacing:.02em;border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 12px),6px)!important
 }
-body.mode--scratchpad :is(.splitpane-fill,.flex-col,.flex-fill){background:transparent!important}
-body.mode--scratchpad :is(.scratchpad__toolbar,.scratchpad__tablist){
+body.hb170-scratchpad-active :is(.splitpane-fill,.flex-col,.flex-fill){background:transparent!important}
+body.hb170-scratchpad-active :is(.scratchpad__toolbar,.scratchpad__tablist){
   background:var(--hb170-sp-panel)!important;border:0!important;border-block-end:1px solid var(--hb170-sp-line)!important;
   color:var(--hb170-sp-ink)!important;border-radius:0!important
 }
-body.mode--scratchpad .scratchpad__toolbar{border-block-end:1px solid var(--hb170-sp-line)!important;padding:.45rem .5rem!important;gap:.25rem}
-body.mode--scratchpad :is(.scratchpad__toolbar__button,.scratchpad__panel-button){
+body.hb170-scratchpad-active .scratchpad__toolbar{border-block-end:1px solid var(--hb170-sp-line)!important;padding:.45rem .5rem!important;gap:.25rem}
+body.hb170-scratchpad-active :is(.scratchpad__toolbar__button,.scratchpad__panel-button){
   border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 12px),6px)!important;
   color:var(--hb170-sp-ink)!important;border:1px solid transparent!important;padding:.25rem .45rem!important
 }
-body.mode--scratchpad :is(.scratchpad__toolbar__button,.scratchpad__panel-button):is(.enabled:hover,.activated){
+body.hb170-scratchpad-active :is(.scratchpad__toolbar__button,.scratchpad__panel-button):is(.enabled:hover,.activated){
   background:color-mix(in srgb,var(--hb-accent) 24%,transparent)!important;color:var(--hb-sp-ink,#fff)!important;
   border-color:color-mix(in srgb,var(--hb-accent) 45%,transparent)!important
 }
-body.mode--scratchpad :is(.scratchpad__toolbar__button,.scratchpad__panel-button).disabled{opacity:.4!important}
-body.mode--scratchpad :is(.scratchpad__toolbar .select,.scratchpad__toolbar select){
+body.hb170-scratchpad-active :is(.scratchpad__toolbar__button,.scratchpad__panel-button).disabled{opacity:.4!important}
+body.hb170-scratchpad-active :is(.scratchpad__toolbar .select,.scratchpad__toolbar select){
   height:1.9rem!important;padding:0 .4rem!important;border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 12px),6px)!important;
   background:var(--hb170-sp-bg)!important;color:var(--hb170-sp-ink)!important;border:1px solid var(--hb170-sp-line)!important
 }
-body.mode--scratchpad .scratchpad__tablist>div{color:var(--hb170-sp-muted)!important;fill:var(--hb170-sp-muted)!important}
-body.mode--scratchpad .scratchpad__tablist>div:is(:hover,.scratchpad__tab-active){
+body.hb170-scratchpad-active .scratchpad__tablist>div{color:var(--hb170-sp-muted)!important;fill:var(--hb170-sp-muted)!important}
+body.hb170-scratchpad-active .scratchpad__tablist>div:is(:hover,.scratchpad__tab-active){
   color:var(--hb170-sp-ink)!important;fill:var(--hb170-sp-ink)!important;border-inline-start-color:var(--hb-accent)!important
 }
-body.mode--scratchpad .scratchpad__data-input{
+body.hb170-scratchpad-active .scratchpad__data-input{
   background:var(--hb170-sp-bg)!important;color:var(--hb170-sp-ink)!important;border-inline-start-color:var(--hb170-sp-line)!important
 }
 /* Monaco / CodeMirror 编辑器本体：贴一层主题色，避免原生纯白刺眼；语法配色仍由编辑器主题决定。 */
-body.mode--scratchpad :is(.ScratchpadMonacoEditor,.monaco-editor,.cm-s-vjcm,.CodeMirror){
+body.hb170-scratchpad-active :is(.ScratchpadMonacoEditor,.monaco-editor,.cm-s-vjcm,.CodeMirror){
   border-radius:0!important
 }
-body.mode--scratchpad :is(.monaco-editor,.cm-s-vjcm,.CodeMirror) :is(.monaco-editor-background,.margin,.monaco-scrollable-element,.cm-gutters,.CodeMirror-gutters){
+body.hb170-scratchpad-active :is(.monaco-editor,.cm-s-vjcm,.CodeMirror) :is(.monaco-editor-background,.margin,.monaco-scrollable-element,.cm-gutters,.CodeMirror-gutters){
   background-color:var(--hb170-sp-bg)!important
 }
-body.mode--scratchpad .cm-s-vjcm{color:var(--hb170-sp-ink)!important;background:var(--hb170-sp-bg)!important}
+body.hb170-scratchpad-active .cm-s-vjcm{color:var(--hb170-sp-ink)!important;background:var(--hb170-sp-bg)!important}
 /* 评测记录 / 预测试面板里的表格也统一配色。 */
-body.mode--scratchpad .scratchpad-container :is(.section,.data-table,.section__table-container,.scratchpad__records__table){
+body.hb170-scratchpad-active .scratchpad-container :is(.section,.data-table,.section__table-container,.scratchpad__records__table){
   background:var(--hb170-sp-panel)!important;color:var(--hb170-sp-ink)!important;border-color:var(--hb170-sp-line)!important
 }
-body.mode--scratchpad :is(.section__header,.section__body,.data-table th,.data-table td){
+body.hb170-scratchpad-active :is(.section__header,.section__body,.data-table th,.data-table td){
   background-color:transparent!important;color:inherit!important;border-color:var(--hb170-sp-line)!important
 }
-body.mode--scratchpad :is(.section__title,h1,h2,h3,label){color:var(--hb170-sp-ink)!important}
-body.mode--scratchpad :is(.section,.data-table,.splitpane-fill)>*{border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 8px),10px)}
+body.hb170-scratchpad-active :is(.section__title,h1,h2,h3,label){color:var(--hb170-sp-ink)!important}
+body.hb170-scratchpad-active :is(.section,.data-table,.splitpane-fill)>*{border-radius:clamp(0px,calc(var(--hb170-radius,var(--hb-global-radius)) - 8px),10px)}
 /* 7) 学术页：卡片圆角与不透明底在首帧就生效，避免"等脚本扫描时才变圆角"的观感（工单 #6）。 */
 :is(#academic-root,.academic-root):not(:where(.hb170-ac,.hb170-academic)) .ac-card{
   border-radius:var(--hb-global-radius)!important;background-clip:padding-box!important
 }
 #academic-root .ac-list-layout>*,.academic-root .ac-list-layout>*{min-width:0}
 /* ---------------- 代码块：与卡片同源的玻璃样式（跟随卡片不透明度/毛玻璃，保留语法高亮） ---------------- */
-body:not(.mode--scratchpad){
+body:not(.hb170-scratchpad-active){
   --hb170-code-bg:var(--hb-global-bg);--hb170-code-line:var(--hb-global-border);--hb170-code-ink:#e7ebf5;
   --hb170-code-muted:#a7b0c6;--hb170-code-padding:14px;--hb170-code-radius:calc(var(--hb170-radius,var(--hb-global-radius)) - 6px);
   --hb170-code-blur:var(--hb170-code-blur-extra,0px);--hb170-code-shadow:none
 }
-body:not(.mode--scratchpad).hb170-light{--hb170-code-ink:#252b3a;--hb170-code-muted:#5b6376}
+body:not(.hb170-scratchpad-active).hb170-light{--hb170-code-ink:#252b3a;--hb170-code-muted:#5b6376}
 /* 与 .hb170-card 完全同源：半透明底 + 背景图透视 + 毛玻璃 + 主题边框。 */
 body.hb170-code-style .hb170-code{
   box-sizing:border-box!important;max-width:100%!important;overflow:auto!important;
@@ -472,7 +472,7 @@ body.hb170-code-style .hb170-code>code{
   border:0!important;color:inherit!important;font:inherit;line-height:inherit;white-space:pre;overflow-wrap:normal
 }
 /* 行内代码：与代码块同一套配色，浅底上不会出现深色药丸。 */
-body.hb170-code-style:not(.mode--scratchpad) .typo :is(p,li,td,blockquote) code:not(:where(pre code)){
+body.hb170-code-style:not(.hb170-scratchpad-active) .typo :is(p,li,td,blockquote) code:not(:where(pre code)){
   padding:.1em .35em;border-radius:clamp(0px,calc(var(--hb170-code-radius) * .45),8px);
   background-color:color-mix(in srgb,var(--hb170-code-bg) 72%,transparent);color:var(--hb170-code-ink)
 }
@@ -488,12 +488,12 @@ html:is(.theme--light,:not(.theme--dark)[data-mantine-color-scheme="light"]) bod
   & .hb170-card .menu__link:not(:is(.active,.selected,.disabled,[aria-current])){color:var(--hb-card-link)!important}
   & .hb170-card .menu__link:not(:is(.active,.selected,.disabled,[aria-current])):is(.highlight,:hover){background:color-mix(in srgb,var(--hb-card-link) 12%,transparent)!important}
 }
-body:not(.mode--scratchpad) :is(.main,#academic-root,.academic-root) .hb170-card>.section__header,
-body:not(.mode--scratchpad) :is(.main,#academic-root,.academic-root) .hb170-card>.section__body:not(.no-padding),
-body:not(.mode--scratchpad) :is(.main,#academic-root,.academic-root) .hb170-card.hb170-table>.section__body,
-body:not(.mode--scratchpad) :is(.main,#academic-root,.academic-root) .hb170-card:is(.ac-card,.card,.ui.segment,.panel):not(:has(>:is(.section__header,.section__body,.menu))),
-body:not(.mode--scratchpad) .main .hb170-card.hb170-table:not(.section){padding:var(--hb-global-padding)!important}
-body:not(.mode--scratchpad) :is(.main,#academic-root,.academic-root) .hb170-card>.section__header:has(+.section__body:not(.no-padding)){padding-block-end:0!important}
+body:not(.hb170-scratchpad-active) :is(.main,#academic-root,.academic-root) .hb170-card>.section__header,
+body:not(.hb170-scratchpad-active) :is(.main,#academic-root,.academic-root) .hb170-card>.section__body:not(.no-padding),
+body:not(.hb170-scratchpad-active) :is(.main,#academic-root,.academic-root) .hb170-card.hb170-table>.section__body,
+body:not(.hb170-scratchpad-active) :is(.main,#academic-root,.academic-root) .hb170-card:is(.ac-card,.card,.ui.segment,.panel):not(:has(>:is(.section__header,.section__body,.menu))),
+body:not(.hb170-scratchpad-active) .main .hb170-card.hb170-table:not(.section){padding:var(--hb-global-padding)!important}
+body:not(.hb170-scratchpad-active) :is(.main,#academic-root,.academic-root) .hb170-card>.section__header:has(+.section__body:not(.no-padding)){padding-block-end:0!important}
 /* Keep the problem count and sort in normal flow so they never cover typed text. */
 .main .hb170-card>.section__body.no-padding:has(>#searchForm>.search){padding:var(--hb-global-padding)!important}
 .main #searchForm{container-type:inline-size}
@@ -678,27 +678,27 @@ html[data-page="home_messages_final"] .mf-dialog{box-shadow:var(--hb-global-shad
 @media(max-width:520px){#hb170-panel,#hb170-trigger{--hb-edge:12px;--hb-trigger-size:44px}}
 @media(max-height:420px){#hb170-head{padding:10px 14px 6px}#hb170-head small{display:none}#hb170-tabs{padding-block:5px}#hb170-tabs button{padding:5px 8px}#hb170-foot{padding:5px 12px}}
 /* v1.7.8: 标题和标签在左侧，题号在独立的右侧区域。 */
-body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags){
+body:not(.hb170-scratchpad-active) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags){
   position:relative!important;
   min-height:calc(var(--hb-problem-nav-height,0px) + 2 * var(--hb-global-padding))!important;
 }
-body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__header,
-body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__body:has(>.problem__tags){
+body:not(.hb170-scratchpad-active) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__header,
+body:not(.hb170-scratchpad-active) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__body:has(>.problem__tags){
   box-sizing:border-box!important;
   width:calc(100% - min(19rem,45%) - .85rem)!important;
   max-width:100%!important;
   min-width:0!important;
 }
-body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__header{position:static!important;display:block!important}
-body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__body>.problem__tags)>.section__header>.contest-problems{
+body:not(.hb170-scratchpad-active) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__header{position:static!important;display:block!important}
+body:not(.hb170-scratchpad-active) .main .section.hb170-card:has(>.section__body>.problem__tags)>.section__header>.contest-problems{
   position:absolute!important;inset:var(--hb-global-padding) var(--hb-global-padding) auto auto!important;
   width:min(19rem,45%)!important;max-width:45%!important;justify-content:flex-end;
 }
 @media(max-width:600px){
-  body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags){min-height:0!important;padding-bottom:calc(var(--hb-problem-nav-height,0px) + var(--hb-global-padding))!important}
-  body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__header,
-  body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__body:has(>.problem__tags){width:100%!important}
-  body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__body>.problem__tags)>.section__header>.contest-problems{position:absolute!important;inset:auto var(--hb-global-padding) var(--hb-global-padding) var(--hb-global-padding)!important;width:auto!important;max-width:none!important;justify-content:flex-start;margin:0!important}
+  body:not(.hb170-scratchpad-active) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags){min-height:0!important;padding-bottom:calc(var(--hb-problem-nav-height,0px) + var(--hb-global-padding))!important}
+  body:not(.hb170-scratchpad-active) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__header,
+  body:not(.hb170-scratchpad-active) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__body:has(>.problem__tags){width:100%!important}
+  body:not(.hb170-scratchpad-active) .main .section.hb170-card:has(>.section__body>.problem__tags)>.section__header>.contest-problems{position:absolute!important;inset:auto var(--hb-global-padding) var(--hb-global-padding) var(--hb-global-padding)!important;width:auto!important;max-width:none!important;justify-content:flex-start;margin:0!important}
 }
 /* 题号不允许 flex-shrink 挤成细线；覆盖 Hydro 固定高度/溢出隐藏，超量自然换行。 */
 .main .hb170-card>.section__header>.contest-problems{
@@ -722,60 +722,60 @@ body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__body>.probl
   backdrop-filter:blur(var(--hb-global-blur));-webkit-backdrop-filter:blur(var(--hb-global-blur))
 }
 /* 工具栏保持一行；空间不足时横向滚动，而不是压缩按钮或竖排文字。 */
-body:not(.mode--scratchpad) .main .section__tools{flex-wrap:nowrap!important;overflow-x:auto;justify-content:flex-start}
-body:not(.mode--scratchpad) .main .section__tools>form,
-body:not(.mode--scratchpad) .main .section__tools .filter-form{flex-wrap:nowrap!important;flex:0 0 auto}
-body:not(.mode--scratchpad) .main .section__tools>span:has(>select){flex:0 0 auto;white-space:nowrap}
-body:not(.mode--scratchpad) .main .section__tools :is(input.textbox,select,.select){flex:0 0 auto!important;width:auto;min-width:5rem}
-body:not(.mode--scratchpad) .main .section__tools input[name=q]{width:11rem}
-body:not(.mode--scratchpad) .main :is(.section__tools button,form[name="filter-form"] button){white-space:nowrap!important;overflow-wrap:normal!important;word-break:keep-all}
+body:not(.hb170-scratchpad-active) .main .section__tools{flex-wrap:nowrap!important;overflow-x:auto;justify-content:flex-start}
+body:not(.hb170-scratchpad-active) .main .section__tools>form,
+body:not(.hb170-scratchpad-active) .main .section__tools .filter-form{flex-wrap:nowrap!important;flex:0 0 auto}
+body:not(.hb170-scratchpad-active) .main .section__tools>span:has(>select){flex:0 0 auto;white-space:nowrap}
+body:not(.hb170-scratchpad-active) .main .section__tools :is(input.textbox,select,.select){flex:0 0 auto!important;width:auto;min-width:5rem}
+body:not(.hb170-scratchpad-active) .main .section__tools input[name=q]{width:11rem}
+body:not(.hb170-scratchpad-active) .main :is(.section__tools button,form[name="filter-form"] button){white-space:nowrap!important;overflow-wrap:normal!important;word-break:keep-all}
 /* Monaco 的根节点、minimap 与输入控件也必须着色，不能只涂 margin。 */
-body.mode--scratchpad :is(.ScratchpadMonacoEditor,.monaco-editor,.monaco-editor .overflow-guard,.monaco-editor .minimap,.monaco-editor .minimap-decorations-layer,.CodeMirror-scroll){background-color:var(--hb170-sp-bg)!important;color:var(--hb170-sp-ink)!important}
-body.mode--scratchpad :is(input,textarea,.inputarea){background-color:var(--hb170-sp-bg)!important;color:var(--hb170-sp-ink)!important;caret-color:var(--hb170-sp-ink)!important;border-color:var(--hb170-sp-line)!important;color-scheme:dark}
-body.mode--scratchpad.hb170-light :is(input,textarea){color-scheme:light}
-body.mode--scratchpad:not(.hb170-light) .monaco-editor .mtk1{color:var(--hb170-sp-ink)!important}
-body.mode--scratchpad .monaco-editor .cursor{color:var(--hb170-sp-ink)!important;border-color:var(--hb170-sp-ink)!important}
+body.hb170-scratchpad-active :is(.ScratchpadMonacoEditor,.monaco-editor,.monaco-editor .overflow-guard,.monaco-editor .minimap,.monaco-editor .minimap-decorations-layer,.CodeMirror-scroll){background-color:var(--hb170-sp-bg)!important;color:var(--hb170-sp-ink)!important}
+body.hb170-scratchpad-active :is(input,textarea,.inputarea){background-color:var(--hb170-sp-bg)!important;color:var(--hb170-sp-ink)!important;caret-color:var(--hb170-sp-ink)!important;border-color:var(--hb170-sp-line)!important;color-scheme:dark}
+body.hb170-scratchpad-active.hb170-light :is(input,textarea){color-scheme:light}
+body.hb170-scratchpad-active:not(.hb170-light) .monaco-editor .mtk1{color:var(--hb170-sp-ink)!important}
+body.hb170-scratchpad-active .monaco-editor .cursor{color:var(--hb170-sp-ink)!important;border-color:var(--hb170-sp-ink)!important}
 /* IDE 只在最外层叠一层卡片底色；编辑器内部透明，避免多层底色累加遮住壁纸。 */
-body.mode--scratchpad .scratchpad-container{
+body.hb170-scratchpad-active .scratchpad-container{
   background:var(--hb-global-bg)!important;
   backdrop-filter:blur(var(--hb-global-blur))!important;-webkit-backdrop-filter:blur(var(--hb-global-blur))!important
 }
-body.mode--scratchpad #scratchpad{
+body.hb170-scratchpad-active #scratchpad{
   background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important
 }
-body.mode--scratchpad .scratchpad-container :is(.ScratchpadMonacoEditor,.monaco-editor,.overflow-guard,.monaco-editor-background,.margin,.monaco-scrollable-element,.minimap,.minimap-decorations-layer,.CodeMirror,.CodeMirror-scroll,.CodeMirror-gutters,.cm-editor,.cm-scroller,.cm-gutters,.cm-s-vjcm,.scratchpad__data-input,.section,.section__table-container,.data-table,.scratchpad__records__table){
+body.hb170-scratchpad-active .scratchpad-container :is(.ScratchpadMonacoEditor,.monaco-editor,.overflow-guard,.monaco-editor-background,.margin,.monaco-scrollable-element,.minimap,.minimap-decorations-layer,.CodeMirror,.CodeMirror-scroll,.CodeMirror-gutters,.cm-editor,.cm-scroller,.cm-gutters,.cm-s-vjcm,.scratchpad__data-input,.section,.section__table-container,.data-table,.scratchpad__records__table){
   background:transparent!important
 }
 /* Monaco 的隐藏输入层不能盖住渲染出的代码；自测输入也直接透出外层玻璃。 */
-body.mode--scratchpad .scratchpad-container :is(input,textarea,.inputarea){background:transparent!important}
+body.hb170-scratchpad-active .scratchpad-container :is(input,textarea,.inputarea){background:transparent!important}
 /* Monaco Quick Input（主题选择/命令面板）可能挂在 body 的独立节点上。
    使用近乎不透明的面板底色保证可读性，不继承代码区的透明背景或主题白底。 */
-body.mode--scratchpad .quick-input-widget{
+body.hb170-scratchpad-active .quick-input-widget{
   background:var(--hb-panel-bg)!important;color:var(--hb-text)!important;
   border:1px solid var(--hb-panel-line)!important;border-radius:10px!important;
   box-shadow:0 12px 36px #0006!important;color-scheme:dark
 }
-body.mode--scratchpad.hb170-light .quick-input-widget{color-scheme:light}
-body.mode--scratchpad .quick-input-widget :is(.quick-input-title,.quick-input-header,.quick-input-list,.monaco-list,.monaco-list-rows,.monaco-scrollable-element,.quick-input-message){
+body.hb170-scratchpad-active.hb170-light .quick-input-widget{color-scheme:light}
+body.hb170-scratchpad-active .quick-input-widget :is(.quick-input-title,.quick-input-header,.quick-input-list,.monaco-list,.monaco-list-rows,.monaco-scrollable-element,.quick-input-message){
   background:transparent!important;color:var(--hb-text)!important
 }
-body.mode--scratchpad .quick-input-widget .monaco-inputbox{
+body.hb170-scratchpad-active .quick-input-widget .monaco-inputbox{
   background:var(--hb-panel-fill)!important;color:var(--hb-text)!important;border:1px solid var(--hb-panel-line)!important
 }
-body.mode--scratchpad .quick-input-widget .monaco-inputbox input{
+body.hb170-scratchpad-active .quick-input-widget .monaco-inputbox input{
   background:transparent!important;color:var(--hb-text)!important;caret-color:var(--hb-text)!important
 }
-body.mode--scratchpad .quick-input-widget .monaco-inputbox input::placeholder{color:var(--hb-panel-muted)!important;opacity:1}
-body.mode--scratchpad .quick-input-widget .monaco-inputbox:focus-within{outline:1px solid var(--hb-accent)!important}
-body.mode--scratchpad .quick-input-widget .monaco-list-row{
+body.hb170-scratchpad-active .quick-input-widget .monaco-inputbox input::placeholder{color:var(--hb-panel-muted)!important;opacity:1}
+body.hb170-scratchpad-active .quick-input-widget .monaco-inputbox:focus-within{outline:1px solid var(--hb-accent)!important}
+body.hb170-scratchpad-active .quick-input-widget .monaco-list-row{
   background:transparent!important;color:var(--hb-text)!important
 }
-body.mode--scratchpad .quick-input-widget .monaco-list-row:is(:hover,.focused,.selected,[aria-selected=true]){
+body.hb170-scratchpad-active .quick-input-widget .monaco-list-row:is(:hover,.focused,.selected,[aria-selected=true]){
   background:color-mix(in srgb,var(--hb-accent) 24%,var(--hb-panel-bg))!important;color:var(--hb-text)!important
 }
-body.mode--scratchpad .quick-input-widget :is(.monaco-icon-label,.monaco-highlighted-label,.label-name,.quick-input-titlebar){color:inherit!important}
-body.mode--scratchpad .quick-input-widget :is(.label-description,.quick-input-description,.quick-input-list-separator){color:var(--hb-panel-muted)!important}
-body.mode--scratchpad .quick-input-widget .monaco-highlighted-label .highlight{color:var(--hb-accent)!important}
+body.hb170-scratchpad-active .quick-input-widget :is(.monaco-icon-label,.monaco-highlighted-label,.label-name,.quick-input-titlebar){color:inherit!important}
+body.hb170-scratchpad-active .quick-input-widget :is(.label-description,.quick-input-description,.quick-input-list-separator){color:var(--hb-panel-muted)!important}
+body.hb170-scratchpad-active .quick-input-widget .monaco-highlighted-label .highlight{color:var(--hb-accent)!important}
 /* 将 Hydro 原有选中线和学术页面选中线统一成强调色。 */
 #menu.nav{--hn-active:var(--hb-accent)!important}
 #menu.nav .nav__item.nav--active{border-color:var(--hb-accent)!important}
@@ -978,7 +978,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
     function applyLayoutMode() {
         const mode = settings.layoutMode;
         let next = null;
-        if (settings.layoutEnabled && mode !== 'auto' && !document.body.classList.contains('mode--scratchpad')) {
+        if (settings.layoutEnabled && mode !== 'auto' && !document.body.classList.contains('hb170-scratchpad-active')) {
             for (const row of $$('.main .row')) {
                 if (row.closest('.section,.scratchpad-container')) continue;
                 const columns = [...row.children].filter(el=>el.matches('.column,.columns,aside'));
@@ -1003,7 +1003,8 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         main.classList.add('hb170-layout-main'); side.classList.add('hb170-layout-side');
         activeLayout = next;
     }
-    // Hydro 普通题面也预建一个 display:none 的程序坞，存在不代表启用。
+    // 仅维护美化脚本自己的状态；绝不改 Hydro 的 mode--scratchpad，避免打断异步进入/退出。
+    // 普通题面预建隐藏程序坞，存在不代表启用。
     function syncScratchpadMode() {
         const body = document.body;
         if (!body) return;
@@ -1013,7 +1014,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
             const css = getComputedStyle(el);
             if (el.hidden || css.display === 'none' || css.visibility === 'hidden') { active = false; break; }
         }
-        if (body.classList.contains('mode--scratchpad') !== active) body.classList.toggle('mode--scratchpad', active);
+        if (body.classList.contains('hb170-scratchpad-active') !== active) body.classList.toggle('hb170-scratchpad-active', active);
     }
     let expectedRootVars = {}, expectedBodyClasses = {};
     function applyAll(rescan = true, persist = true) {
@@ -1491,7 +1492,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
     });
     observer.observe(document.documentElement,{childList:true,subtree:true});
     syncScratchpadMode();
-    let inScratchpad = document.body.classList.contains('mode--scratchpad');
+    let inScratchpad = document.body.classList.contains('hb170-scratchpad-active');
     // PJAX 可保留 body，却替换 html 的 style/class 或原卡片的 class。
     // 比较脚本拥有的状态，不比较站点自己的属性；自身写入不会再次触发修复。
     let queuedRestore = 0;
@@ -1518,7 +1519,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         if (records.some(r => r.target === document.body || r.target === container ||
             (container && r.target.contains?.(container)))) {
             syncScratchpadMode();
-            const next = document.body.classList.contains('mode--scratchpad');
+            const next = document.body.classList.contains('hb170-scratchpad-active');
             if (next !== inScratchpad) { inScratchpad = next; applyLayoutMode(); }
         }
         const relevant = !style.isConnected || records.some(r =>

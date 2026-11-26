@@ -3,7 +3,7 @@
 一个 Hydro 站点的篡改猴（Tampermonkey / Violentmonkey / Userscripts）美化脚本。
 
 - 站点：`https://zsoj.gbfish.cn/`、内网镜像 `http://10.3.44.224/`（含带端口的写法，如 `http://10.3.44.224:8080/`），以及脚本头部 `@match` 里的其它 Hydro 站点
-- 当前版本：**v1.14.3**
+- 当前版本：**v1.14.4**
 - 脚本文件：`Hydro-UI-Beautifier.user.js`
 - 历史版本：`versions/Hydro-UI-Beautifier-<版本号>.user.js`
 
@@ -28,6 +28,14 @@ https://cdn.jsdelivr.net/gh/lscminxi/hydro-better@main/Hydro-UI-Beautifier.user.
 - 或者直接打开上面的地址，脚本管理器会自动弹出安装页。
 
 首次本地安装的话，打开 `Hydro-UI-Beautifier.user.js` 把内容复制进「新建脚本」也可以，但那样脚本管理器不认识更新源，只能依赖脚本内置的更新检测（见下）。
+
+## v1.14.4 更新内容
+
+- 修复 IDE 模式同步对 Hydro 原生切换流程的干扰：不再添加或移除站点的 `mode--scratchpad`，避免在异步动画/加载期间反向修改原生状态。
+- 美化样式与布局判断统一改用独立的 `hb170-scratchpad-active`，仍根据容器可见性启用，保留隐藏 IDE 的普通题面适配、壁纸和主题弹窗配色。
+- 新增回归断言：进入前容器尚未显示时不清除原生模式；退出动画尚未结束时不重新添加原生模式。已有导航、配色与观察器稳定性测试继续通过。
+
+内网真实 IDE 资源加载尚需更新后验证；本次不隐藏加载器、不更改网络请求或编辑器初始化流程。
 
 ## v1.14.3 更新内容
 
