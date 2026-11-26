@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hydro UI Beautifier
 // @namespace    https://zsoj.gbfish.cn/
-// @version      1.14.2
+// @version      1.14.3
 // @description  Hydro 全站美化
 // @author       lrbkdgw
 // @match        https://zsoj.gbfish.cn/*
@@ -35,7 +35,7 @@
 
     // v1.11.0：移除「打开 10.3.44.224 自动打开云原神、打开云原神自动跳回内网」的联动逻辑。
     // 现在脚本只负责美化，不会自动打开任何标签页。
-    const VERSION = '1.14.2';
+    const VERSION = '1.14.3';
     // 自动更新：源仓库固定指向本脚本的 GitHub 仓库，raw 地址即 @downloadURL。
     const UPDATE = {
         repo: 'lscminxi/hydro-better',
@@ -748,6 +748,34 @@ body.mode--scratchpad .scratchpad-container :is(.ScratchpadMonacoEditor,.monaco-
 }
 /* Monaco 的隐藏输入层不能盖住渲染出的代码；自测输入也直接透出外层玻璃。 */
 body.mode--scratchpad .scratchpad-container :is(input,textarea,.inputarea){background:transparent!important}
+/* Monaco Quick Input（主题选择/命令面板）可能挂在 body 的独立节点上。
+   使用近乎不透明的面板底色保证可读性，不继承代码区的透明背景或主题白底。 */
+body.mode--scratchpad .quick-input-widget{
+  background:var(--hb-panel-bg)!important;color:var(--hb-text)!important;
+  border:1px solid var(--hb-panel-line)!important;border-radius:10px!important;
+  box-shadow:0 12px 36px #0006!important;color-scheme:dark
+}
+body.mode--scratchpad.hb170-light .quick-input-widget{color-scheme:light}
+body.mode--scratchpad .quick-input-widget :is(.quick-input-title,.quick-input-header,.quick-input-list,.monaco-list,.monaco-list-rows,.monaco-scrollable-element,.quick-input-message){
+  background:transparent!important;color:var(--hb-text)!important
+}
+body.mode--scratchpad .quick-input-widget .monaco-inputbox{
+  background:var(--hb-panel-fill)!important;color:var(--hb-text)!important;border:1px solid var(--hb-panel-line)!important
+}
+body.mode--scratchpad .quick-input-widget .monaco-inputbox input{
+  background:transparent!important;color:var(--hb-text)!important;caret-color:var(--hb-text)!important
+}
+body.mode--scratchpad .quick-input-widget .monaco-inputbox input::placeholder{color:var(--hb-panel-muted)!important;opacity:1}
+body.mode--scratchpad .quick-input-widget .monaco-inputbox:focus-within{outline:1px solid var(--hb-accent)!important}
+body.mode--scratchpad .quick-input-widget .monaco-list-row{
+  background:transparent!important;color:var(--hb-text)!important
+}
+body.mode--scratchpad .quick-input-widget .monaco-list-row:is(:hover,.focused,.selected,[aria-selected=true]){
+  background:color-mix(in srgb,var(--hb-accent) 24%,var(--hb-panel-bg))!important;color:var(--hb-text)!important
+}
+body.mode--scratchpad .quick-input-widget :is(.monaco-icon-label,.monaco-highlighted-label,.label-name,.quick-input-titlebar){color:inherit!important}
+body.mode--scratchpad .quick-input-widget :is(.label-description,.quick-input-description,.quick-input-list-separator){color:var(--hb-panel-muted)!important}
+body.mode--scratchpad .quick-input-widget .monaco-highlighted-label .highlight{color:var(--hb-accent)!important}
 /* 将 Hydro 原有选中线和学术页面选中线统一成强调色。 */
 #menu.nav{--hn-active:var(--hb-accent)!important}
 #menu.nav .nav__item.nav--active{border-color:var(--hb-accent)!important}
