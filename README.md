@@ -3,7 +3,7 @@
 一个 Hydro 站点的篡改猴（Tampermonkey / Violentmonkey / Userscripts）美化脚本。
 
 - 站点：`https://zsoj.gbfish.cn/`、内网镜像 `http://10.3.44.224/`（含带端口的写法，如 `http://10.3.44.224:8080/`），以及脚本头部 `@match` 里的其它 Hydro 站点
-- 当前版本：**v1.14.1**
+- 当前版本：**v1.14.2**
 - 脚本文件：`Hydro-UI-Beautifier.user.js`
 - 历史版本：`versions/Hydro-UI-Beautifier-<版本号>.user.js`
 
@@ -28,6 +28,15 @@ https://cdn.jsdelivr.net/gh/lscminxi/hydro-better@main/Hydro-UI-Beautifier.user.
 - 或者直接打开上面的地址，脚本管理器会自动弹出安装页。
 
 首次本地安装的话，打开 `Hydro-UI-Beautifier.user.js` 把内容复制进「新建脚本」也可以，但那样脚本管理器不认识更新源，只能依赖脚本内置的更新检测（见下）。
+
+## v1.14.2 更新内容
+
+- 修复真实原因：Hydro 在普通题面预建隐藏的 `.scratchpad-container` / `#scratchpad`，此前脚本仅凭节点存在就添加 `mode--scratchpad`，误把普通页面当成 IDE，令多处卡片和布局规则失效。
+- 改为按容器及祖先的显示状态同步 IDE 模式；进入、退出、局部跳转和残留 mode class 都会重新核对，不再需要靠强制刷新纠正误判。
+- IDE 外层背景跟随全局卡片不透明度及毛玻璃；移除原先固定的 92% / 94% 底色，编辑器内部背景透明，避免多层底色叠加遮住壁纸；保留代码高亮。
+- IDE 表格背景规则限定在程序坞内，不再给普通题面卡片强加 IDE 底色。
+
+回归测试沿用下方命令，新增隐藏 IDE 初始节点、进入/退出、残留模式 class、隐藏祖先的案例；内网站点实际壁纸显示仍需浏览器验证。
 
 ## v1.14.1 更新内容
 
