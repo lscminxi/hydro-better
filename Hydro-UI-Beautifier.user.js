@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hydro UI Beautifier
 // @namespace    https://zsoj.gbfish.cn/
-// @version      1.14.0
+// @version      1.14.1
 // @description  Hydro 全站美化
 // @author       lrbkdgw
 // @match        https://zsoj.gbfish.cn/*
@@ -35,7 +35,7 @@
 
     // v1.11.0：移除「打开 10.3.44.224 自动打开云原神、打开云原神自动跳回内网」的联动逻辑。
     // 现在脚本只负责美化，不会自动打开任何标签页。
-    const VERSION = '1.14.0';
+    const VERSION = '1.14.1';
     // 自动更新：源仓库固定指向本脚本的 GitHub 仓库，raw 地址即 @downloadURL。
     const UPDATE = {
         repo: 'lscminxi/hydro-better',
@@ -700,6 +700,15 @@ body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__body>.probl
   body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__header>.contest-problems):has(>.section__body>.problem__tags)>.section__body:has(>.problem__tags){width:100%!important}
   body:not(.mode--scratchpad) .main .section.hb170-card:has(>.section__body>.problem__tags)>.section__header>.contest-problems{position:absolute!important;inset:auto var(--hb-global-padding) var(--hb-global-padding) var(--hb-global-padding)!important;width:auto!important;max-width:none!important;justify-content:flex-start;margin:0!important}
 }
+/* 题号不允许 flex-shrink 挤成细线；覆盖 Hydro 固定高度/溢出隐藏，超量自然换行。 */
+.main .hb170-card>.section__header>.contest-problems{
+  display:flex!important;flex-wrap:wrap!important;height:auto!important;max-height:none!important;min-height:2rem;
+  overflow:visible!important;white-space:normal!important;align-content:flex-start;row-gap:.35rem!important
+}
+.main .hb170-card .contest-problems>a[href]{
+  flex:0 0 auto!important;float:none!important;width:auto!important;min-width:2rem!important;
+  max-width:none!important;margin:0!important;white-space:nowrap!important
+}
 /* v1.14：下拉菜单须抬高整个玻璃卡片的 stacking context，而不仅是列表自身。 */
 .main .section:has(.autocomplete-list):focus-within{position:relative;z-index:30!important;overflow:visible!important}
 .main .section:has(.autocomplete-list) :is(.section__body,.row,.columns){overflow:visible!important}
@@ -953,6 +962,7 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
         main.classList.add('hb170-layout-main'); side.classList.add('hb170-layout-side');
         activeLayout = next;
     }
+    let expectedRootVars = {}, expectedBodyClasses = {};
     function applyAll(rescan = true, persist = true) {
         const root = document.documentElement, body = document.body, darkRGB = settings.dark ? '29,32,45' : '255,255,255';
         if (!body) return;
@@ -978,9 +988,11 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
             '--hb170-code-font-scale':settings.codeFontScale/100
         };
         for (const g of GROUPS) { const v = groupValues(g); vars[`--hb-${g}-bg`] = `rgba(${darkRGB},${v.opacity/100})`; vars[`--hb-${g}-blur`] = v.blur+'px'; vars[`--hb-${g}-radius`] = v.radius+'px'; }
+        expectedRootVars = vars;
         Object.entries(vars).forEach(([k,v]) => root.style.setProperty(k,v));
         root.classList.toggle('hb170-bg-active', settings.enabled && settings.transparent);
-        for (const [cls,val] of Object.entries({'bg-active':settings.enabled && settings.transparent,'transparent':settings.enabled && settings.transparent,'layout':settings.layoutEnabled,'compact':settings.compact,'striped':settings.striped,'shadow':settings.shadow,'border-off':!settings.border,'media-frames':settings.mediaFrames,'light':!settings.dark,'code-style':settings.codeStyle,'code-wrap':settings.codeStyle && settings.codeWrap})) body.classList.toggle('hb170-'+cls,!!val);
+        expectedBodyClasses = {'bg-active':settings.enabled && settings.transparent,'transparent':settings.enabled && settings.transparent,'layout':settings.layoutEnabled,'compact':settings.compact,'striped':settings.striped,'shadow':settings.shadow,'border-off':!settings.border,'media-frames':settings.mediaFrames,'light':!settings.dark,'code-style':settings.codeStyle,'code-wrap':settings.codeStyle && settings.codeWrap};
+        for (const [cls,val] of Object.entries(expectedBodyClasses)) body.classList.toggle('hb170-'+cls,!!val);
         root.classList.toggle('hb170-font-scale', Number(settings.fontScale)!==100);
         applyBackground();
         // 更新跟随状态，不必每次滑动都重新搜索 DOM。
@@ -1427,15 +1439,41 @@ ${color('background','纯色背景')}${color('gradientA','渐变颜色 A')}${col
     // 程序坞在部分版本里直接渲染 #scratchpad，这里补齐 mode--scratchpad，保证 IDE 样式生效。
     if (document.querySelector('#scratchpad,.scratchpad-container')) document.body.classList.add('mode--scratchpad');
     let inScratchpad = document.body.classList.contains('mode--scratchpad');
+    // PJAX 可保留 body，却替换 html 的 style/class 或原卡片的 class。
+    // 比较脚本拥有的状态，不比较站点自己的属性；自身写入不会再次触发修复。
+    let queuedRestore = 0;
+    function needsThemeRestore() {
+        const root = document.documentElement, body = document.body;
+        if (!body || !style.isConnected) return true;
+        if (Object.entries(expectedRootVars).some(([key,value]) => root.style.getPropertyValue(key).trim() !== String(value))) return true;
+        if (Object.entries(expectedBodyClasses).some(([key,value]) => body.classList.contains('hb170-'+key) !== !!value)) return true;
+        if (root.classList.contains('hb170-bg-active') !== !!(settings.enabled && settings.transparent)) return true;
+        for (const [el,group] of recognized) if (el.isConnected &&
+            (!el.classList.contains('hb170-card') || !el.classList.contains('hb170-'+group) ||
+             el.classList.contains('hb170-follow') !== !!settings[group+'FollowGlobal'])) return true;
+        return false;
+    }
+    function restoreAfterNavigation() {
+        if (queuedRestore) return;
+        queuedRestore = setTimeout(() => {
+            queuedRestore = 0;
+            mount(); applyAll(true, false); applyStickyFooter();
+        }, 0);
+    }
     new MutationObserver(records=>{
-        if (!records.some(r => r.target === document.body)) return;
-        const next = document.body.classList.contains('mode--scratchpad');
-        if (next !== inScratchpad) { inScratchpad = next; applyLayoutMode(); }
-        const expected = settings.enabled && settings.transparent;
-        if (document.body.classList.contains('hb170-transparent') !== !!expected ||
-            document.body.classList.contains('hb170-light') !== !settings.dark ||
-            document.body.classList.contains('hb170-code-style') !== !!settings.codeStyle) applyAll(true, false);
-    }).observe(document.documentElement,{attributes:true,subtree:true,attributeFilter:['class']});
+        if (records.some(r => r.target === document.body)) {
+            const next = document.body.classList.contains('mode--scratchpad');
+            if (next !== inScratchpad) { inScratchpad = next; applyLayoutMode(); }
+        }
+        const relevant = !style.isConnected || records.some(r =>
+            r.type === 'attributes' && (r.target === document.documentElement ||
+                r.target === document.body || recognized.has(r.target)));
+        if (relevant && needsThemeRestore()) restoreAfterNavigation();
+    }).observe(document.documentElement,{attributes:true,subtree:true,attributeFilter:['class','style'],childList:true});
+    // 事件作为补充；属性恢复不依赖站点是否使用原生事件或 jQuery PJAX。
+    document.addEventListener('pjax:complete', restoreAfterNavigation);
+    document.addEventListener('pjax:end', restoreAfterNavigation);
+    window.addEventListener('pageshow', restoreAfterNavigation);
     console.info(`[Hydro UI Beautifier] v${VERSION} loaded`);
     });
 })();
